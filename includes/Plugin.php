@@ -10,10 +10,15 @@ class Plugin {
 	}
 
 	// Activate plugin - create options and database table
-	public function dcms_activation_plugin() {
+	public function dcms_activation_plugin():void {
+		// Create tables
+		$db = new Database();
+		$db->create_table_items();
+		$db->create_table_item_details();
 	}
 
+
 	// Deactivate plugin
-	public function dcms_deactivation_plugin() {
+	public function dcms_deactivation_plugin():void {
 	}
 }

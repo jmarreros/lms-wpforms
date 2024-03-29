@@ -62,4 +62,12 @@ class Database {
 
 		return $this->wpdb->get_row( $sql, ARRAY_A );
 	}
+
+	// Get item data by user and course
+	public function get_item_data( $user_id, $course_id ): array {
+		$sql = "SELECT * FROM $this->table_items 
+         		WHERE user_id = $user_id AND course_id = $course_id";
+
+		return $this->wpdb->get_row( $sql, ARRAY_A )??[];
+	}
 }

@@ -36,6 +36,7 @@ final class Loader {
 		define( 'DCMS_WPFORMS_URL', plugin_dir_url( __FILE__ ) );
 		define( 'DCMS_WPFORMS_BASE_NAME', plugin_basename( __FILE__ ) );
 		define( 'DCMS_WPFORMS_SUBMENU', 'tools.php' );
+		define( 'DCMS_WPFORMS_FORM_ID', 115883 );
 	}
 
 	// Load tex domain

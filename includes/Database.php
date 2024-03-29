@@ -50,4 +50,16 @@ class Database {
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $sql );
 	}
+
+	public function get_lesson_data( $lesson_id ): array {
+		$lessons_table = $this->wpdb->prefix . 'stm_lms_user_lessons';
+		$post_table    = $this->wpdb->posts;
+
+		$sql = "SELECT l.course_id course_id, p.post_author author_id 
+				FROM $lessons_table l
+				INNER JOIN $post_table p ON l.course_id = p.ID 
+				WHERE l.lesson_id = $lesson_id";
+
+		return $this->wpdb->get_row( $sql, ARRAY_A );
+	}
 }

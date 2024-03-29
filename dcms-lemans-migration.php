@@ -18,6 +18,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use dcms\wpforms\includes\Plugin;
 use dcms\wpforms\includes\Submenu;
+use dcms\wpforms\includes\Form;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -61,6 +62,7 @@ final class Loader {
 		$this->add_link_plugin();
 		new Plugin();
 		new SubMenu();
+		new Form();
 	}
 }
 

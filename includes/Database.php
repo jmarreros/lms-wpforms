@@ -1,16 +1,18 @@
 <?php
 
-namespace dcms\wpforms\includes;
+namespace dcms\lms_forms\includes;
 
 class Database {
 	private \wpdb $wpdb;
 	private string $table_items;
 	private string $table_item_detail;
+	private string $table_fields;
 
 	public function __construct() {
 		global $wpdb;
 
 		$this->wpdb              = $wpdb;
+		$this->table_fields     = $this->wpdb->prefix . 'lms_wpform_fields';
 		$this->table_items       = $this->wpdb->prefix . 'lms_wpform_items';
 		$this->table_item_detail = $this->wpdb->prefix . 'lms_wpform_item_details';
 	}
@@ -22,7 +24,7 @@ class Database {
                     user_id bigint(20) NOT NULL,
                     course_id bigint(20) NOT NULL,
                     author_id bigint(20) NOT NULL,
-                    entry_id bigint(20) NOT NULL,
+                    entry_id_wpforms bigint(20) NOT NULL,
                     total_foac04 smallint NOT NULL,
                     total_foac05 smallint NOT NULL,
                     total_foac06 smallint NOT NULL,
@@ -39,10 +41,23 @@ class Database {
 		$sql = "CREATE TABLE IF NOT EXISTS $this->table_item_detail (
     				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                     id_item bigint(20) NOT NULL,
-                    field_id smallint NOT NULL,
-                    field_label varchar(255) NOT NULL,
+                    field_id int NOT NULL,
                     field_value varchar(255) NOT NULL,
-                    field_group varchar(10) NOT NULL,
+                    PRIMARY KEY (id)
+                ) {$this->wpdb->get_charset_collate()};";
+
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		dbDelta( $sql );
+	}
+
+
+	// Template table fields to related with WPForms field ids
+	public function create_table_fields(): void {
+		$sql = "CREATE TABLE IF NOT EXISTS $this->table_fields (
+    				id int unsigned NOT NULL AUTO_INCREMENT,
+                    field_label varchar(255) NOT NULL,
+                    field_id_wpforms smallint NOT NULL,
+                    field_group varchar(10) NULL,
                     updated datetime default CURRENT_TIMESTAMP,
                     PRIMARY KEY (id)
                 ) {$this->wpdb->get_charset_collate()};";
@@ -50,6 +65,7 @@ class Database {
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $sql );
 	}
+
 
 	public function get_lesson_data( $lesson_id ): array {
 		$lessons_table = $this->wpdb->prefix . 'stm_lms_user_lessons';
@@ -68,6 +84,6 @@ class Database {
 		$sql = "SELECT * FROM $this->table_items 
          		WHERE user_id = $user_id AND course_id = $course_id";
 
-		return $this->wpdb->get_row( $sql, ARRAY_A )??[];
+		return $this->wpdb->get_row( $sql, ARRAY_A ) ?? [];
 	}
 }

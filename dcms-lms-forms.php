@@ -1,24 +1,25 @@
 <?php
 /*
-Plugin Name: LMS - WPForms
+Plugin Name: LMS - Forms
 Plugin URI: https://decodecms.com
 Description: Integrates WPForms with LMS for evaluations
 Version: 1.0
 Author: Jhon Marreros Guzmán
 Author URI: https://decodecms.com
-Text Domain: dcms-lms-wpforms
+Text Domain: dcms-lms-forms
 Domain Path: languages
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 */
 
-namespace dcms\wpforms;
+namespace dcms\lms_forms;
 
 require __DIR__ . '/vendor/autoload.php';
 
-use dcms\wpforms\includes\Plugin;
-use dcms\wpforms\includes\Submenu;
-use dcms\wpforms\includes\Form;
+use dcms\lms_forms\includes\Plugin;
+use dcms\lms_forms\includes\Submenu;
+use dcms\lms_forms\includes\Form;
+use dcms\lms_forms\includes\Configuration;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -35,15 +36,16 @@ final class Loader {
 		define( 'DCMS_WPFORMS_PATH', plugin_dir_path( __FILE__ ) );
 		define( 'DCMS_WPFORMS_URL', plugin_dir_url( __FILE__ ) );
 		define( 'DCMS_WPFORMS_BASE_NAME', plugin_basename( __FILE__ ) );
-		define( 'DCMS_WPFORMS_SUBMENU', 'tools.php' );
-		define( 'DCMS_WPFORMS_FORM_ID', 115883 );
+		define( 'DCMS_WPFORMS_SUBMENU', 'options-general.php' );
+		define( 'DCMS_WPFORMS_CONFIGURATION_PAGE', DCMS_WPFORMS_SUBMENU . '?page=dcms-lms-forms' );
+		define( 'DCMS_WPFORMS_FORM_ID', 'dcms_lms_forms_id_form' );
 	}
 
 	// Load tex domain
-	public function load_domain() {
+	public function load_domain(): void {
 		add_action( 'plugins_loaded', function () {
 			$path_languages = dirname( DCMS_WPFORMS_BASE_NAME ) . '/languages/';
-			load_plugin_textdomain( 'dcms-lms-wpforms', false, $path_languages );
+			load_plugin_textdomain( 'dcms-lms-forms', false, $path_languages );
 		} );
 	}
 
@@ -51,7 +53,7 @@ final class Loader {
 	public function add_link_plugin(): void {
 		add_action( 'plugin_action_links_' . plugin_basename( __FILE__ ), function ( $links ) {
 			return array_merge( array(
-				'<a href="' . esc_url( admin_url( DCMS_WPFORMS_SUBMENU . '?page=dcms-lms-wpforms' ) ) . '">' . __( 'Settings', 'dcms-lms-wpforms' ) . '</a>'
+				'<a href="' . esc_url( admin_url( DCMS_WPFORMS_CONFIGURATION_PAGE ) ) . '">' . __( 'Settings', 'dcms-lms-forms' ) . '</a>'
 			), $links );
 		} );
 	}
@@ -64,6 +66,7 @@ final class Loader {
 		new Plugin();
 		new SubMenu();
 		new Form();
+		new Configuration();
 	}
 }
 

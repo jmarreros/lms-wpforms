@@ -1,6 +1,6 @@
 <?php
 
-namespace dcms\wpforms\includes;
+namespace dcms\lms_forms\includes;
 
 class Plugin {
 
@@ -15,6 +15,7 @@ class Plugin {
 		$db = new Database();
 		$db->create_table_items();
 		$db->create_table_item_details();
+		$db->create_table_fields();
 	}
 
 

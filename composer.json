@@ -3,7 +3,7 @@
   "description": "Migrate data from Joomla to WooCommerce",
   "autoload": {
     "psr-4": {
-      "dcms\\wpforms\\": "./"
+      "dcms\\lms_forms\\": "./"
     },
     "files": [
       "helpers/general.php"

@@ -1,17 +1,21 @@
 <?php
 
-namespace dcms\wpforms\includes;
+namespace dcms\lms_forms\includes;
 
 class Form {
 
+	private int $form_id;
+
 	public function __construct() {
+		$this->form_id = get_option( DCMS_WPFORMS_FORM_ID , 0);
+
 		add_filter( 'wpforms_field_properties_hidden', [ $this, 'fill_hidden_fields' ], 10, 3 );
 		add_action( 'wpforms_frontend_output_before', [ $this, 'form_was_filled' ], 10, 2 );
 	}
 
 	// Fill hidden fields wpforms with custom values
 	public function fill_hidden_fields( $properties, $field, $form_data ): array {
-		if ( absint( $form_data['id'] ) === DCMS_WPFORMS_FORM_ID ) {
+		if ( absint( $form_data['id'] ) === $this->form_id ) {
 
 			$value = $properties['inputs']['primary']['attr']['value'];
 
@@ -38,7 +42,7 @@ class Form {
 
 	// Add custom styles to show or hide form and next button at the top of the form
 	public function form_was_filled( $form_data, $form ): void {
-		if ( absint( $form_data['id'] ) !== DCMS_WPFORMS_FORM_ID ) {
+		if ( absint( $form_data['id'] ) !== $this->form_id ) {
 			return;
 		}
 

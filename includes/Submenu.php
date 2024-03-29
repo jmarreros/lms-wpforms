@@ -1,6 +1,6 @@
 <?php
 
-namespace dcms\wpforms\includes;
+namespace dcms\lms_forms\includes;
 
 /**
  * Class for creating a dashboard submenu
@@ -16,17 +16,17 @@ class Submenu {
 	public function register_submenu(): void {
 		add_submenu_page(
 			DCMS_WPFORMS_SUBMENU,
-			__( 'LMS WpForms integration', 'dcms-lms-wpforms' ),
-			__( 'LMS WpForms integration', 'dcms-lms-wpforms' ),
+			__( 'LMS WpForms integration', 'dcms-lms-forms' ),
+			__( 'LMS WpForms integration', 'dcms-lms-forms' ),
 			'manage_options',
-			'lms-wpforms',
+			'dcms-lms-forms',
 			[ $this, 'submenu_page_callback' ]
 		);
 	}
 
 	// Callback, show view
 	public function submenu_page_callback(): void {
-		$mensaje = mensaje();
+		$id_form = get_option( DCMS_WPFORMS_FORM_ID, 0 );
 		include_once( DCMS_WPFORMS_PATH . '/views/main-screen.php' );
 	}
 }

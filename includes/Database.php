@@ -58,6 +58,7 @@ class Database {
                     field_label varchar(255) NOT NULL,
                     field_id_wpforms smallint NOT NULL,
                     field_group varchar(10) NULL,
+                    field_type varchar(20) NULL,
                     updated datetime default CURRENT_TIMESTAMP,
                     PRIMARY KEY (id)
                 ) {$this->wpdb->get_charset_collate()};";

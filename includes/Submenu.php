@@ -2,6 +2,8 @@
 
 namespace dcms\lms_forms\includes;
 
+use dcms\lms_forms\helpers\FieldType;
+
 /**
  * Class for creating a dashboard submenu
  */
@@ -26,6 +28,7 @@ class Submenu {
 
 	// Callback, show view
 	public function submenu_page_callback(): void {
+//		$x = FieldType::Comment;
 		$id_form = get_option( DCMS_WPFORMS_FORM_ID, 0 );
 		include_once( DCMS_WPFORMS_PATH . '/views/main-screen.php' );
 	}

@@ -10,7 +10,8 @@ class Configuration {
 		add_action( 'admin_post_save_id_form', [ $this, 'save_id_form' ] );
 	}
 
-	#[NoReturn] public function save_id_form(): void {
+	#[NoReturn]
+	public function save_id_form(): void {
 		$id_form = (int) $_POST['id_wpform'];
 		update_option( DCMS_WPFORMS_FORM_ID, $id_form );
 

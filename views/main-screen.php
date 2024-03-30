@@ -20,4 +20,20 @@
         </table>
     </form>
     <hr>
+
+
+
+    <table class="form-table">
+        <tbody>
+        <tr>
+            <th scope="row">
+                <label>Datos</label>
+            </th>
+            <td>
+                <input class="button button-primary" type="button" id="btn-save-fields" value="Grabar">
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
 </div>

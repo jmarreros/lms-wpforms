@@ -12,7 +12,7 @@ class Database {
 		global $wpdb;
 
 		$this->wpdb              = $wpdb;
-		$this->table_fields     = $this->wpdb->prefix . 'lms_wpform_fields';
+		$this->table_fields      = $this->wpdb->prefix . 'lms_wpform_fields';
 		$this->table_items       = $this->wpdb->prefix . 'lms_wpform_items';
 		$this->table_item_detail = $this->wpdb->prefix . 'lms_wpform_item_details';
 	}
@@ -59,6 +59,7 @@ class Database {
                     field_id_wpforms smallint NOT NULL,
                     field_group varchar(10) NULL,
                     field_type varchar(20) NULL,
+                    field_options varchar(50) NULL,
                     updated datetime default CURRENT_TIMESTAMP,
                     PRIMARY KEY (id)
                 ) {$this->wpdb->get_charset_collate()};";
@@ -86,5 +87,14 @@ class Database {
          		WHERE user_id = $user_id AND course_id = $course_id";
 
 		return $this->wpdb->get_row( $sql, ARRAY_A ) ?? [];
+	}
+
+	public function get_wpforms_content( $id_wpforms ): string {
+		$post_table = $this->wpdb->posts;
+
+		$sql = "SELECT post_content FROM $post_table
+				WHERE ID = $id_wpforms";
+
+		return $this->wpdb->get_var( $sql ) ?? '';
 	}
 }

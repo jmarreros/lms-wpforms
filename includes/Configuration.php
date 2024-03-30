@@ -8,6 +8,7 @@ class Configuration {
 
 	public function __construct() {
 		add_action( 'admin_post_save_id_form', [ $this, 'save_id_form' ] );
+		add_action( 'wp_ajax_dcms_lms_forms_save_fields', [ $this, 'lms_forms_save_fields' ] );
 	}
 
 	#[NoReturn]
@@ -17,5 +18,19 @@ class Configuration {
 
 		wp_safe_redirect( esc_url( admin_url( DCMS_WPFORMS_CONFIGURATION_PAGE ) ) );
 		exit();
+	}
+
+	public function lms_forms_save_fields(): void {
+		$nonce = $_POST['nonce'];
+//		if ( ! wp_verify_nonce( $nonce, 'ajax-nonce-lms-forms' ) ) {
+//			wp_send_json_error( [ 'message' => 'Nonce error' ] );
+//		}
+//
+//		$fields = $_POST['fields'];
+//
+		$form = new Form();
+		$form->get_wpforms_fields(115883);
+
+		wp_send_json_success( [ 'message' => 'Fields saved' ] );
 	}
 }

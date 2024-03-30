@@ -2,12 +2,14 @@
 
 namespace dcms\lms_forms\includes;
 
+use dcms\lms_forms\helpers\FieldType;
+
 class Form {
 
 	private int $form_id;
 
 	public function __construct() {
-		$this->form_id = get_option( DCMS_WPFORMS_FORM_ID , 0);
+		$this->form_id = get_option( DCMS_WPFORMS_FORM_ID, 0 );
 
 		add_filter( 'wpforms_field_properties_hidden', [ $this, 'fill_hidden_fields' ], 10, 3 );
 		add_action( 'wpforms_frontend_output_before', [ $this, 'form_was_filled' ], 10, 2 );
@@ -59,5 +61,32 @@ class Form {
 			echo "<style>.wpforms-container{display:none;}</style>";
 		}
 
+	}
+
+	public function get_wpforms_fields( $id_wpforms ): array {
+		$db      = new Database();
+		$content = $db->get_wpforms_content( $id_wpforms );
+		$types   = [ FieldType::Rating, FieldType::Textarea, FieldType::Checkbox ];
+
+		$data = json_decode( $content );
+
+		if ( empty( $data ) ) {
+			return [];
+		}
+
+		error_log( print_r( $data->fields, true ) );
+
+		foreach ( $data->fields as $field ) {
+			if ( in_array( $field->type, $types ) ) {
+
+				$field_id_wpforms = $field->id;
+				$field_label      = $field->label;
+				$field_type       = $field->type;
+
+				error_log( print_r( $field->id, true ) );
+			}
+		}
+
+		return [];
 	}
 }

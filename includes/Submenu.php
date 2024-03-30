@@ -28,6 +28,9 @@ class Submenu {
 
 	// Callback, show view
 	public function submenu_page_callback(): void {
+		wp_enqueue_script( 'lms-forms-script' );
+		wp_enqueue_style( 'lms-forms-style' );
+
 //		$x = FieldType::Comment;
 		$id_form = get_option( DCMS_WPFORMS_FORM_ID, 0 );
 		include_once( DCMS_WPFORMS_PATH . '/views/main-screen.php' );

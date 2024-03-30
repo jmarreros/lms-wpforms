@@ -20,6 +20,7 @@ use dcms\lms_forms\includes\Plugin;
 use dcms\lms_forms\includes\Submenu;
 use dcms\lms_forms\includes\Form;
 use dcms\lms_forms\includes\Configuration;
+use dcms\lms_forms\includes\Enqueue;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -65,6 +66,7 @@ final class Loader {
 		$this->add_link_plugin();
 		new Plugin();
 		new SubMenu();
+		new Enqueue();
 		new Form();
 		new Configuration();
 	}

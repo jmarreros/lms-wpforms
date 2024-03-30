@@ -74,19 +74,59 @@ class Form {
 			return [];
 		}
 
-		error_log( print_r( $data->fields, true ) );
-
+		$fields = [];
 		foreach ( $data->fields as $field ) {
 			if ( in_array( $field->type, $types ) ) {
-
-				$field_id_wpforms = $field->id;
-				$field_label      = $field->label;
-				$field_type       = $field->type;
-
-				error_log( print_r( $field->id, true ) );
+				$field_options = '';
+				if ( $field->type === FieldType::Checkbox ) {
+					foreach ( $field->choices as $choice ) {
+						$field_options .= $choice->label . '|';
+					}
+				}
+				$fields[ $field->id ] = [
+					'field_label'      => $field->label,
+					'field_type'       => $field->type,
+					'field_options'    => $field_options
+				];
 			}
 		}
 
-		return [];
+		return $fields;
+	}
+
+	// Get merged fields from wpforms and database configuration
+	public function get_fields_configuration(): array {
+		$db = new Database();
+
+		$fields_db = $db->get_fields();
+		$fields_wpforms       = $this->get_wpforms_fields( $this->form_id );
+
+		$fields = [];
+
+		// Fill database configuration info
+		foreach ( $fields_db as $field_db ) {
+			$fields[ $field_db['field_id_wpforms'] ] = [
+				'field_label'   => $field_db['field_label'],
+				'field_type'    => $field_db['field_type'],
+				'field_options' => $field_db['field_options'],
+				'field_group'   => $field_db['field_group']
+			];
+		}
+
+		// Fill wpforms fields
+		foreach ( $fields_wpforms as $key => $field_wpforms ) {
+			if ( array_key_exists( $key, $fields ) ) {
+				continue;
+			}
+
+			$fields[ $key ] = [
+				'field_label'   => $field_wpforms['field_label'],
+				'field_type'    => $field_wpforms['field_type'],
+				'field_options' => $field_wpforms['field_options'],
+				'field_group'   => ''
+			];
+		}
+
+		return $fields;
 	}
 }

@@ -22,18 +22,29 @@
     <hr>
 
 
-
     <table class="form-table">
+        <thead>
+        <tr>
+            <th>ID Field</th>
+            <th>Label</th>
+            <th>Type</th>
+            <th>Options</th>
+            <th>Document</th>
+        </tr>
+        </thead>
         <tbody>
         <tr>
-            <th scope="row">
-                <label>Datos</label>
-            </th>
-            <td>
-                <input class="button button-primary" type="button" id="btn-save-fields" value="Grabar">
-            </td>
+            <td>1</td>
+            <td>Label</td>
+            <td>type</td>
+            <td>si,no</td>
+            <td></td>
         </tr>
         </tbody>
+
     </table>
+
+
+    <input class="button button-primary" type="button" id="btn-save-fields" value="Grabar">
 
 </div>

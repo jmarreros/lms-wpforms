@@ -31,8 +31,12 @@ class Submenu {
 		wp_enqueue_script( 'lms-forms-script' );
 		wp_enqueue_style( 'lms-forms-style' );
 
-//		$x = FieldType::Comment;
+		$form    = new Form();
 		$id_form = get_option( DCMS_WPFORMS_FORM_ID, 0 );
+		$fields  = $form->get_fields_configuration();
+
+		error_log( print_r( $fields, true ) );
+
 		include_once( DCMS_WPFORMS_PATH . '/views/main-screen.php' );
 	}
 }

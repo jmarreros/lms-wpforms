@@ -42,7 +42,7 @@ class Database {
     				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                     id_item bigint(20) NOT NULL,
                     field_id int NOT NULL,
-                    field_value varchar(255) NOT NULL,
+                    field_value text NOT NULL,
                     PRIMARY KEY (id)
                 ) {$this->wpdb->get_charset_collate()};";
 
@@ -55,11 +55,12 @@ class Database {
 	public function create_table_fields(): void {
 		$sql = "CREATE TABLE IF NOT EXISTS $this->table_fields (
     				id int unsigned NOT NULL AUTO_INCREMENT,
-                    field_label varchar(255) NOT NULL,
+                    field_label varchar(250) NULL,
                     field_id_wpforms smallint NOT NULL,
                     field_group varchar(10) NULL,
                     field_type varchar(20) NULL,
-                    field_options varchar(50) NULL,
+                    field_options varchar(250) NULL,
+                    is_active tinyint(1) NOT NULL DEFAULT 1,
                     updated datetime default CURRENT_TIMESTAMP,
                     PRIMARY KEY (id)
                 ) {$this->wpdb->get_charset_collate()};";
@@ -97,4 +98,12 @@ class Database {
 
 		return $this->wpdb->get_var( $sql ) ?? '';
 	}
+
+	// Get fields saved in configuration from database
+	public function get_fields(): array {
+		$sql = "SELECT * FROM $this->table_fields WHERE is_active = 1 ORDER BY field_group, field_type";
+
+		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
+	}
+
 }

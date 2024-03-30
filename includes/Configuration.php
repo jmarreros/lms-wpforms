@@ -28,8 +28,6 @@ class Configuration {
 //
 //		$fields = $_POST['fields'];
 //
-		$form = new Form();
-		$form->get_wpforms_fields(115883);
 
 		wp_send_json_success( [ 'message' => 'Fields saved' ] );
 	}

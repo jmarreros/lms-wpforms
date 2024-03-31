@@ -35,10 +35,10 @@
         <tbody>
 		<?php foreach ( $fields as $key => $field ) : ?>
             <tr id="<?= $key ?>">
-                <td><?= $key ?></td>
-                <td><?= $field['field_label'] ?></td>
-                <td><?= $field['field_type'] ?></td>
-                <td><?= $field['field_options'] ?></td>
+                <td class="id"><?= $key ?></td>
+                <td class="label"><?= $field['field_label'] ?></td>
+                <td class="type"><?= $field['field_type'] ?></td>
+                <td class="options"><?= $field['field_options'] ?></td>
                 <td>
                     <select class="document">
                         <option value="" >-- Ninguno --</option>

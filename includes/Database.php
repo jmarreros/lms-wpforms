@@ -54,16 +54,15 @@ class Database {
 	// Template table fields to related with WPForms field ids
 	public function create_table_fields(): void {
 		$sql = "CREATE TABLE IF NOT EXISTS $this->table_fields (
-    				id int unsigned NOT NULL AUTO_INCREMENT,
-                    field_label varchar(250) NULL,
                     field_id_wpforms smallint NOT NULL,
+                    field_label varchar(250) NULL,
                     field_group varchar(10) NULL,
                     field_type varchar(20) NULL,
                     field_options varchar(250) NULL,
                     field_order smallint NOT NULL,
                     is_active tinyint(1) NOT NULL DEFAULT 1,
                     updated datetime default CURRENT_TIMESTAMP,
-                    PRIMARY KEY (id)
+                    PRIMARY KEY (field_id_wpforms)
                 ) {$this->wpdb->get_charset_collate()};";
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -109,4 +108,22 @@ class Database {
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 
+
+	public function update_fields_configuration( $fields ): void {
+		if ( empty( $fields ) ) {
+			return;
+		}
+
+		foreach ( $fields as $field ) {
+			$data = [
+				'field_id_wpforms' => $field['id'],
+				'field_label'     => $field['label'],
+				'field_group'     => $field['document'],
+				'field_type'      => $field['type'],
+				'field_options'   => $field['options'],
+				'field_order'     => $field['order'],
+			];
+			$this->wpdb->replace( $this->table_fields, $data );
+		}
+	}
 }

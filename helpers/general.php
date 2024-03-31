@@ -12,7 +12,7 @@ abstract class FieldGroup
 {
 	const FO_AC_04 = 'FO-AC-04';
 	const FO_AC_05 = 'FO-AC-05';
-	const FO_AC_06 = 'FO-AC-04';
+	const FO_AC_06 = 'FO-AC-06';
 
 	public  static function get_groups(): array {
 		return [

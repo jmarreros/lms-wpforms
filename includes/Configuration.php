@@ -23,8 +23,10 @@ class Configuration {
 	public function lms_forms_save_fields(): void {
 		$this->nonce_verification();
 
-		$fields = $_POST['fields']??[];
-		error_log(print_r($fields,true));
+		$fields = $_POST['fields'] ?? [];
+
+		$db = new Database();
+		$db->update_fields_configuration( $fields );
 
 		wp_send_json( [ 'message' => 'Fields saved' ] );
 	}

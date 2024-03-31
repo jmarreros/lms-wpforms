@@ -60,6 +60,7 @@ class Database {
                     field_group varchar(10) NULL,
                     field_type varchar(20) NULL,
                     field_options varchar(250) NULL,
+                    field_order smallint NOT NULL,
                     is_active tinyint(1) NOT NULL DEFAULT 1,
                     updated datetime default CURRENT_TIMESTAMP,
                     PRIMARY KEY (id)
@@ -101,7 +102,9 @@ class Database {
 
 	// Get fields saved in configuration from database
 	public function get_fields(): array {
-		$sql = "SELECT * FROM $this->table_fields WHERE is_active = 1 ORDER BY field_group, field_type";
+		$sql = "SELECT * FROM $this->table_fields 
+         		WHERE is_active = 1 AND field_group<>'' 
+         		ORDER BY field_group, field_order";
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}

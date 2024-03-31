@@ -21,8 +21,7 @@
     </form>
     <hr>
 
-
-    <table class="form-table">
+    <table id="form-fields" class="form-fields">
         <thead>
         <tr>
             <th>ID Field</th>
@@ -30,16 +29,31 @@
             <th>Type</th>
             <th>Options</th>
             <th>Document</th>
+            <th>Order</th>
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td>1</td>
-            <td>Label</td>
-            <td>type</td>
-            <td>si,no</td>
-            <td></td>
-        </tr>
+		<?php foreach ( $fields as $key => $field ) : ?>
+            <tr id="<?= $key ?>">
+                <td><?= $key ?></td>
+                <td><?= $field['field_label'] ?></td>
+                <td><?= $field['field_type'] ?></td>
+                <td><?= $field['field_options'] ?></td>
+                <td>
+                    <select class="document">
+                        <option value="" >-- Ninguno --</option>
+                        <?php foreach ( $groups as $group ) : ?>
+                            <option value="<?= $group ?>"  <?= selected($field['field_group'], $group) ?> >
+                                <?= $group ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+                <td>
+                    <input class="order" type="number" value="<?= $field['field_order'] ?>"/>
+                </td>
+            </tr>
+		<?php endforeach; ?>
         </tbody>
 
     </table>

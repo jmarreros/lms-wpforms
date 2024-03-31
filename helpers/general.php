@@ -13,9 +13,13 @@ abstract class FieldGroup
 	const FO_AC_04 = 'FO-AC-04';
 	const FO_AC_05 = 'FO-AC-05';
 	const FO_AC_06 = 'FO-AC-04';
+
+	public  static function get_groups(): array {
+		return [
+			self::FO_AC_04,
+			self::FO_AC_05,
+			self::FO_AC_06
+		];
+	}
 }
 
-
-function mensaje(): string {
-	return "Hola desde helper";
-}

@@ -84,9 +84,9 @@ class Form {
 					}
 				}
 				$fields[ $field->id ] = [
-					'field_label'      => $field->label,
-					'field_type'       => $field->type,
-					'field_options'    => $field_options
+					'field_label'   => $field->label,
+					'field_type'    => $field->type,
+					'field_options' => rtrim( $field_options, '|' )
 				];
 			}
 		}
@@ -98,8 +98,8 @@ class Form {
 	public function get_fields_configuration(): array {
 		$db = new Database();
 
-		$fields_db = $db->get_fields();
-		$fields_wpforms       = $this->get_wpforms_fields( $this->form_id );
+		$fields_db      = $db->get_fields();
+		$fields_wpforms = $this->get_wpforms_fields( $this->form_id );
 
 		$fields = [];
 
@@ -109,7 +109,8 @@ class Form {
 				'field_label'   => $field_db['field_label'],
 				'field_type'    => $field_db['field_type'],
 				'field_options' => $field_db['field_options'],
-				'field_group'   => $field_db['field_group']
+				'field_group'   => $field_db['field_group'],
+				'field_order'   => $field_db['field_order']
 			];
 		}
 
@@ -123,7 +124,8 @@ class Form {
 				'field_label'   => $field_wpforms['field_label'],
 				'field_type'    => $field_wpforms['field_type'],
 				'field_options' => $field_wpforms['field_options'],
-				'field_group'   => ''
+				'field_group'   => '',
+				'field_order'   => 0
 			];
 		}
 

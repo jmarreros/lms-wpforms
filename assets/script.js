@@ -1,3 +1,4 @@
+
 (function ($) {
     'use strict';
 
@@ -5,27 +6,40 @@
     $('#btn-save-fields').click(function (e) {
         e.preventDefault();
 
-        $.ajax({
-            url: lms_forms.ajaxurl,
-            type: 'post',
-            dataType: 'json',
-            data: {
-                action: 'dcms_lms_forms_save_fields',
-                nonce: lms_forms.nonce_lms_forms,
-            },
-            beforeSend: function () {
+        let fields = [];
+        $('#form-fields tbody tr').each(function (index, element) {
+            let id = $(element).attr('id');
+            let document = $(element).find('.document').val();
+            let order = $(element).find('.order').val();
 
-            }
-        })
-            .done(function (res) {
+            // fields.push({
+            //     id: id,
+            //     document: document,
+            //     order: order
+            // });
 
-                if (res.success) {
-                    console.log(res.data);
-                } else {
-                    console.log(res.data);
+            $.ajax({
+                url: lms_forms.ajaxurl,
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    action: 'dcms_lms_forms_save_fields',
+                    nonce: lms_forms.nonce_lms_forms,
+                    fields: fields
+                },
+                beforeSend: function () {
+
                 }
+            })
+                .done(function (res) {
 
-            });
+                    if (res.success) {
+                        console.log(res.data);
+                    } else {
+                        console.log(res.data);
+                    }
+
+                });
+        });
     });
-
 })(jQuery);

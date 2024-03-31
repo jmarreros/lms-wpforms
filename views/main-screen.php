@@ -21,44 +21,47 @@
     </form>
     <hr>
 
-    <table id="form-fields" class="form-fields">
-        <thead>
-        <tr>
-            <th>ID Field</th>
-            <th>Label</th>
-            <th>Type</th>
-            <th>Options</th>
-            <th>Document</th>
-            <th>Order</th>
-        </tr>
-        </thead>
-        <tbody>
-		<?php foreach ( $fields as $key => $field ) : ?>
-            <tr id="<?= $key ?>">
-                <td class="id"><?= $key ?></td>
-                <td class="label"><?= $field['field_label'] ?></td>
-                <td class="type"><?= $field['field_type'] ?></td>
-                <td class="options"><?= $field['field_options'] ?></td>
-                <td>
-                    <select class="document">
-                        <option value="" >-- Ninguno --</option>
-                        <?php foreach ( $groups as $group ) : ?>
-                            <option value="<?= $group ?>"  <?= selected($field['field_group'], $group) ?> >
-                                <?= $group ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </td>
-                <td>
-                    <input class="order" type="number" value="<?= $field['field_order'] ?>"/>
-                </td>
+    <div id="container-fields">
+        <table id="table-fields" class="form-fields">
+            <thead>
+            <tr>
+                <th>ID Field</th>
+                <th>Label</th>
+                <th>Type</th>
+                <th>Options</th>
+                <th>Document</th>
+                <th>Order</th>
             </tr>
-		<?php endforeach; ?>
-        </tbody>
+            </thead>
+            <tbody>
+		    <?php foreach ( $fields as $key => $field ) : ?>
+                <tr id="<?= $key ?>">
+                    <td class="id"><?= $key ?></td>
+                    <td class="label"><?= $field['field_label'] ?></td>
+                    <td class="type"><?= $field['field_type'] ?></td>
+                    <td class="options"><?= $field['field_options'] ?></td>
+                    <td>
+                        <select class="document">
+                            <option value="" >-- Ninguno --</option>
+						    <?php foreach ( $groups as $group ) : ?>
+                                <option value="<?= $group ?>"  <?= selected($field['field_group'], $group) ?> >
+								    <?= $group ?>
+                                </option>
+						    <?php endforeach; ?>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="order" type="number" value="<?= $field['field_order'] ?>"/>
+                    </td>
+                </tr>
+		    <?php endforeach; ?>
+            </tbody>
 
-    </table>
+        </table>
 
-
-    <input class="button button-primary" type="button" id="btn-save-fields" value="Grabar">
+        <input class="button button-primary" type="button" id="btn-save-fields" value="Grabar">
+        <span class="msg-btn"></span>
+        <div class="loading hide"></div>
+    </div>
 
 </div>

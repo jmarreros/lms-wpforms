@@ -6,7 +6,7 @@
         e.preventDefault();
 
         let fields = [];
-        $('#form-fields tbody tr').each(function (index, element) {
+        $('#table-fields tbody tr.changed').each(function (index, element) {
             const id = $(element).attr('id');
             const label = $(element).find('.label').text();
             const type = $(element).find('.type').text();
@@ -15,23 +15,36 @@
             const order = $(element).find('.order').val();
 
             fields.push({
-                id: id, label:label, type:type, options:options, document: document, order: order
+                id: id, label: label, type: type, options: options, document: document, order: order
             });
         });
 
         $.ajax({
-            url: lms_forms.ajaxurl, type: 'post', dataType: 'json', data: {
-                action: 'dcms_lms_forms_save_fields', nonce: lms_forms.nonce_lms_forms, fields: fields
+            url: lms_forms.ajaxurl,
+            type: 'post',
+            dataType: 'json',
+            data: {
+                action: 'dcms_lms_forms_save_fields',
+                nonce: lms_forms.nonce_lms_forms,
+                fields: fields
             }, beforeSend: function () {
+                $('#container-fields .msg-btn').text(lms_forms.sending);
+                $('#container-fields .button').prop('disabled', true);
+                $('#container-fields .loading').removeClass('hide');
             }
         })
             .done(function (res) {
-                if (res.success) {
-                    console.log(res.data);
-                } else {
-                    console.log(res.data);
-                }
+                $('#container-fields .msg-btn').text(res.message);
+            })
+            .always(function () {
+                $('#container-fields .button').prop('disabled', false);
+                $('#container-fields .loading').addClass('hide');
             });
+    });
+
+    // Mark as changed when input or select changes
+    $('#table-fields tr select, #table-fields tr input').on('change', function () {
+        $(this).closest('tr').addClass('changed');
     });
 
 })(jQuery);

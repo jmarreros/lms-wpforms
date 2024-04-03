@@ -13,9 +13,12 @@ class Form {
 
 		add_filter( 'wpforms_field_properties_hidden', [ $this, 'fill_hidden_fields' ], 10, 3 );
 		add_action( 'wpforms_frontend_output_before', [ $this, 'form_was_filled' ], 10, 2 );
+
+		add_action( 'wpforms_process_complete', [ $this, 'save_form_data' ], 10, 4 );
 	}
 
-	// Fill hidden fields wpforms with custom values
+	// Fill hidden fields wpforms with custom values, only necessary fill course_id and course_name
+	// Other fields are filled by WPForm configuration hidden field
 	public function fill_hidden_fields( $properties, $field, $form_data ): array {
 		if ( absint( $form_data['id'] ) === $this->form_id ) {
 
@@ -23,16 +26,13 @@ class Form {
 
 			$db = new Database();
 			switch ( $field['label'] ) {
-				case 'user_id':
-					$value = get_current_user_id();
-					break;
 				case 'course_id':
-					$data  = $db->get_lesson_data( get_the_ID() );
+					$data  = $db->get_course_data_by_lesson( get_the_ID() );
 					$value = $data['course_id'];
 					break;
-				case 'author_id':
-					$data  = $db->get_lesson_data( get_the_ID() );
-					$value = $data['author_id'];
+				case 'course_name':
+					$data  = $db->get_course_data_by_lesson( get_the_ID() );
+					$value = $data['course_name'];
 					break;
 			}
 
@@ -49,7 +49,7 @@ class Form {
 		}
 
 		$db          = new Database();
-		$lesson_data = $db->get_lesson_data( get_the_ID() );
+		$lesson_data = $db->get_course_data_by_lesson( get_the_ID() );
 		$course_id   = $lesson_data['course_id'];
 
 		$item_data = $db->get_item_data( get_current_user_id(), $course_id );
@@ -131,4 +131,41 @@ class Form {
 
 		return $fields;
 	}
+
+
+	// Save form data
+	public function save_form_data( $fields, $entry, $form_data, $entry_id ): void {
+		if ( absint( $form_data['id'] ) !== $this->form_id ) {
+			return;
+		}
+
+		$db        = new Database();
+		$fields_db = $db->get_fields();
+
+		// Get only value from first element of the filter array
+		$course_id = array_values(filter_from_fields('course_id', $fields))[0]['value'] ?? 0;
+		error_log(print_r($course_id,true));
+
+		$course_data = $db->get_course_data( $course_id );
+		error_log(print_r($course_data,true));
+
+		foreach ( $fields_db as $field_db ) {
+			$id = $field_db['field_id_wpforms'];
+			if ( ! array_key_exists( $field_db['field_id_wpforms'], $fields ) ) {
+				continue;
+			}
+//			$item['user_id']   = get_current_user_id();
+//			$item['course_id'] = $fields['course_id'];
+		}
+
+//
+//		error_log( print_r( get_the_ID(), true ) );
+//		error_log( print_r( $entry_id, true ) );
+//		error_log( print_r( $fields, true ) );
+//		error_log( print_r( $entry, true ) );
+//		error_log( print_r( $form_data, true ) );
+
+	}
+
+
 }

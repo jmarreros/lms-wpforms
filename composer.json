@@ -6,7 +6,8 @@
       "dcms\\lms_forms\\": "./"
     },
     "files": [
-      "helpers/general.php"
+      "helpers/enums.php",
+      "helpers/functions.php"
     ]
   },
   "authors": [

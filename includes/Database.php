@@ -70,17 +70,41 @@ class Database {
 	}
 
 
-	public function get_lesson_data( $lesson_id ): array {
+	public function get_course_data_by_lesson( $lesson_id ): array {
 		$lessons_table = $this->wpdb->prefix . 'stm_lms_user_lessons';
 		$post_table    = $this->wpdb->posts;
+		$user_table    = $this->wpdb->users;
 
-		$sql = "SELECT l.course_id course_id, p.post_author author_id 
+		$sql = "SELECT 
+				l.course_id course_id, 
+				p.post_title course_name,
+				p.post_author author_id,
+				u.display_name author_name
 				FROM $lessons_table l
 				INNER JOIN $post_table p ON l.course_id = p.ID 
+				INNER JOIN $user_table u ON p.post_author = u.ID
 				WHERE l.lesson_id = $lesson_id";
 
 		return $this->wpdb->get_row( $sql, ARRAY_A );
 	}
+
+	public function get_course_data($course_id): array {
+		$post_table    = $this->wpdb->posts;
+		$user_table    = $this->wpdb->users;
+
+		$sql = "SELECT
+				p.ID course_id,
+				p.post_title course_name,
+				p.post_author author_id,
+				u.display_name author_name
+				FROM $post_table p 
+				INNER JOIN $user_table u ON p.post_author = u.ID
+				WHERE p.ID = $course_id";
+
+		return $this->wpdb->get_row( $sql, ARRAY_A );
+	}
+
+
 
 	// Get item data by user and course
 	public function get_item_data( $user_id, $course_id ): array {
@@ -117,13 +141,24 @@ class Database {
 		foreach ( $fields as $field ) {
 			$data = [
 				'field_id_wpforms' => $field['id'],
-				'field_label'     => $field['label'],
-				'field_group'     => $field['document'],
-				'field_type'      => $field['type'],
-				'field_options'   => $field['options'],
-				'field_order'     => $field['order'],
+				'field_label'      => $field['label'],
+				'field_group'      => $field['document'],
+				'field_type'       => $field['type'],
+				'field_options'    => $field['options'],
+				'field_order'      => $field['order'],
 			];
 			$this->wpdb->replace( $this->table_fields, $data );
+		}
+	}
+
+	// Save items entry in custom lms_wpform_items table
+	public function save_items_entry($item, $item_details){
+		$this->wpdb->insert($this->table_items, $item);
+		$id = $this->wpdb->insert_id;
+
+		foreach ($item_details as $detail){
+			$detail['id'] = $id;
+			$this->wpdb->insert($this->table_item_detail, $detail);
 		}
 	}
 }

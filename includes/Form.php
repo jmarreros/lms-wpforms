@@ -135,36 +135,45 @@ class Form {
 
 	// Save form data
 	public function save_form_data( $fields, $entry, $form_data, $entry_id ): void {
+
 		if ( absint( $form_data['id'] ) !== $this->form_id ) {
 			return;
 		}
 
-		$db        = new Database();
-		$fields_db = $db->get_fields();
+		$db = new Database();
 
 		// Get only value from first element of the filter array
-		$course_id = array_values(filter_from_fields('course_id', $fields))[0]['value'] ?? 0;
-		error_log(print_r($course_id,true));
-
+		$course_id   = array_values( filter_from_fields( 'course_id', $fields ) )[0]['value'] ?? 0;
 		$course_data = $db->get_course_data( $course_id );
-		error_log(print_r($course_data,true));
 
+		$item = [
+			'user_id'          => get_current_user_id(),
+			'course_id'        => $course_id,
+			'author_id'        => $course_data['author_id'],
+			'entry_id_wpforms' => $entry_id
+		];
+
+		$fields_db = $db->get_fields();
+
+		$item_details = [];
 		foreach ( $fields_db as $field_db ) {
+
 			$id = $field_db['field_id_wpforms'];
 			if ( ! array_key_exists( $field_db['field_id_wpforms'], $fields ) ) {
 				continue;
 			}
-//			$item['user_id']   = get_current_user_id();
-//			$item['course_id'] = $fields['course_id'];
+
+			$item_details[] = [
+				[
+					'field_id'    => $id,
+					'field_value' => $fields[ $id ] ['value'] ?? ''
+				]
+			];
 		}
 
-//
-//		error_log( print_r( get_the_ID(), true ) );
-//		error_log( print_r( $entry_id, true ) );
-//		error_log( print_r( $fields, true ) );
-//		error_log( print_r( $entry, true ) );
-//		error_log( print_r( $form_data, true ) );
-
+		error_log( print_r( $fields, true ) );
+		error_log( print_r( $item, true ) );
+		error_log( print_r( $item_details, true ) );
 	}
 
 

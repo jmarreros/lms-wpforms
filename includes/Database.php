@@ -2,8 +2,10 @@
 
 namespace dcms\lms_forms\includes;
 
+use wpdb;
+
 class Database {
-	private \wpdb $wpdb;
+	private wpdb $wpdb;
 	private string $table_items;
 	private string $table_item_detail;
 	private string $table_fields;
@@ -88,9 +90,9 @@ class Database {
 		return $this->wpdb->get_row( $sql, ARRAY_A );
 	}
 
-	public function get_course_data($course_id): array {
-		$post_table    = $this->wpdb->posts;
-		$user_table    = $this->wpdb->users;
+	public function get_course_data( $course_id ): array {
+		$post_table = $this->wpdb->posts;
+		$user_table = $this->wpdb->users;
 
 		$sql = "SELECT
 				p.ID course_id,
@@ -103,7 +105,6 @@ class Database {
 
 		return $this->wpdb->get_row( $sql, ARRAY_A );
 	}
-
 
 
 	// Get item data by user and course
@@ -152,13 +153,13 @@ class Database {
 	}
 
 	// Save items entry in custom lms_wpform_items table
-	public function save_items_entry($item, $item_details){
-		$this->wpdb->insert($this->table_items, $item);
+	public function save_items_fields( $item, $item_details ): void {
+		$this->wpdb->insert( $this->table_items, $item );
 		$id = $this->wpdb->insert_id;
 
-		foreach ($item_details as $detail){
-			$detail['id'] = $id;
-			$this->wpdb->insert($this->table_item_detail, $detail);
+		foreach ( $item_details as $detail ) {
+			$detail['id_item'] = $id;
+			$this->wpdb->insert( $this->table_item_detail, $detail );
 		}
 	}
 }

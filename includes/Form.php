@@ -164,16 +164,12 @@ class Form {
 			}
 
 			$item_details[] = [
-				[
-					'field_id'    => $id,
-					'field_value' => $fields[ $id ] ['value'] ?? ''
-				]
+				'field_id'    => $id,
+				'field_value' => $fields[ $id ] ['value'] ?? ''
 			];
 		}
 
-		error_log( print_r( $fields, true ) );
-		error_log( print_r( $item, true ) );
-		error_log( print_r( $item_details, true ) );
+		$db->save_items_fields( $item, $item_details );
 	}
 
 

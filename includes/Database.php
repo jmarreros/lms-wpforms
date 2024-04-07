@@ -161,5 +161,6 @@ class Database {
 			$detail['id_item'] = $id;
 			$this->wpdb->insert( $this->table_item_detail, $detail );
 		}
+
 	}
 }

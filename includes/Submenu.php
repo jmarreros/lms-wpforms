@@ -23,12 +23,22 @@ class Submenu {
 			__( 'LMS WpForms integration', 'dcms-lms-forms' ),
 			'manage_options',
 			'dcms-lms-forms',
-			[ $this, 'submenu_page_callback' ]
+			[ $this, 'main_page_callback' ]
+		);
+
+		add_submenu_page(
+			'wpforms-overview',
+			esc_html__( 'Reporte Evaluaciones', 'wpforms-lite' ),
+			esc_html__( 'Reporte Evaluaciones', 'wpforms-lite' ),
+			'manage_options',
+			'dcms-lms-forms-report',
+			[ $this, 'report_page_callback' ],
+			0
 		);
 	}
 
-	// Callback, show view
-	public function submenu_page_callback(): void {
+	// Callback, show main view
+	public function main_page_callback(): void {
 		wp_enqueue_script( 'lms-forms-script' );
 		wp_enqueue_style( 'lms-forms-style' );
 
@@ -38,5 +48,13 @@ class Submenu {
 		$groups = FieldGroup::get_groups();
 
 		include_once( DCMS_WPFORMS_PATH . '/views/main-screen.php' );
+	}
+
+	// Report page callback
+	public function report_page_callback(): void {
+		wp_enqueue_script( 'lms-forms-script' );
+		wp_enqueue_style( 'lms-forms-style' );
+
+		include_once( DCMS_WPFORMS_PATH . '/views/report.php' );
 	}
 }

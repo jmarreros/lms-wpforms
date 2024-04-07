@@ -2,15 +2,18 @@
     margin-bottom:20px;
 }
 
+.table-report th,
 .form-fields th{
     background-color:#ccc;
     padding:4px 10px;
 }
 
+.table-report tbody,
 .form-fields tbody{
     background-color: white;
 }
 
+.table-report tbody tr td,
 .form-fields tbody tr td{
     padding: 2px 6px;
     text-align: center;
@@ -29,6 +32,26 @@
     margin-top: 5px;
     margin-left: 5px;
     display: inline-block;
+}
+
+.table-report{
+    width: 100%;
+}
+
+#container-report{
+    margin-top: 12px;
+}
+
+#list-courses{
+    width: 100%;
+}
+
+.form-table.filter-table{
+    width: auto;
+}
+
+.form-table.filter-table th{
+    width: 100px;
 }
 
 /* CSS spin */

@@ -2,6 +2,7 @@
 
 namespace dcms\lms_forms\includes;
 
+use dcms\lms_forms\helpers\FieldGroup;
 use dcms\lms_forms\helpers\FieldType;
 
 class Form {
@@ -44,6 +45,7 @@ class Form {
 
 	// Add custom styles to show or hide form and next button at the top of the form
 	public function form_was_filled( $form_data, $form ): void {
+
 		if ( absint( $form_data['id'] ) !== $this->form_id ) {
 			return;
 		}
@@ -146,11 +148,15 @@ class Form {
 		$course_id   = array_values( filter_from_fields( 'course_id', $fields ) )[0]['value'] ?? 0;
 		$course_data = $db->get_course_data( $course_id );
 
+		// Item data
 		$item = [
 			'user_id'          => get_current_user_id(),
 			'course_id'        => $course_id,
 			'author_id'        => $course_data['author_id'],
-			'entry_id_wpforms' => $entry_id
+			'entry_id_wpforms' => $entry_id,
+			'total_foac04'     => 0,
+			'total_foac05'     => 0,
+			'total_foac06'     => 0,
 		];
 
 		$fields_db = $db->get_fields();
@@ -163,10 +169,26 @@ class Form {
 				continue;
 			}
 
+			// Detail item data
 			$item_details[] = [
 				'field_id'    => $id,
-				'field_value' => $fields[ $id ] ['value'] ?? ''
+				'field_value' => $fields[ $id ] ['value'] ?? '',
 			];
+
+			// sum rating fields totals items for each group
+			if ( $field_db['field_type'] === FieldType::Rating ) {
+				switch ( $field_db['field_group'] ) {
+					case FieldGroup::FO_AC_04:
+						$item['total_foac04'] += intval( $fields[ $id ] ['value'] );
+						break;
+					case FieldGroup::FO_AC_05:
+						$item['total_foac05'] += intval( $fields[ $id ] ['value'] );
+						break;
+					case FieldGroup::FO_AC_06:
+						$item['total_foac06'] += intval( $fields[ $id ] ['value'] );
+						break;
+				}
+			}
 		}
 
 		$db->save_items_fields( $item, $item_details );

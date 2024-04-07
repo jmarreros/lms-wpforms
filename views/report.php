@@ -9,9 +9,9 @@
             </th>
             <td>
                 <label for="date-range-1">Desde:</label>
-                <input type="date" name="date-range-1" id="date-range-1">
+                <input type="date" name="date-from" id="date-from">
                 <label for="date-range-2">Hasta:</label>
-                <input type="date" name="date-range-2" id="date-range-2">
+                <input type="date" name="date-to" id="date-to">
             </td>
             <td></td>
         </tr>
@@ -21,10 +21,12 @@
             </th>
             <td>
                 <select name="list-courses" id="list-courses">
-                    <option value="0">Seleccione un curso</option>
-                    <option value="1">Curso 1</option>
-                    <option value="1">Curso 1</option>
-                    <option value="1">Curso 1</option>
+                    <option value="0">-- Seleccione un curso --</option>
+                    <?php foreach ( $courses as $course ) : ?>
+                        <option value="<?php echo $course['course_id'] ?>">
+                            <?php echo $course['course_name'] ?> - <?php echo $course['created'] ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </td>
             <td>

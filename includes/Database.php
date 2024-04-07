@@ -163,4 +163,16 @@ class Database {
 		}
 
 	}
+
+	// Get active courses
+	public function get_courses(): array {
+		$post_table = $this->wpdb->posts;
+
+		$sql = "SELECT DISTINCT i.course_id, c.post_title course_name, DATE(c.post_date) created 
+				FROM $this->table_items i
+				INNER JOIN $post_table c ON i.course_id = c.ID 
+				ORDER BY course_name, created DESC";
+
+		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
+	}
 }

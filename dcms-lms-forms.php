@@ -40,6 +40,7 @@ final class Loader {
 		define( 'DCMS_WPFORMS_SUBMENU', 'options-general.php' );
 		define( 'DCMS_WPFORMS_CONFIGURATION_PAGE', DCMS_WPFORMS_SUBMENU . '?page=dcms-lms-forms' );
 		define( 'DCMS_WPFORMS_FORM_ID', 'dcms_lms_forms_id_form' );
+		define( 'DCMS_WPFORMS_MINIMUM_DATE_COURSES', '2024-03-01'); // Date to filter courses, to start new functionality
 	}
 
 	// Load tex domain

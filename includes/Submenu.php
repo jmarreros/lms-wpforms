@@ -55,6 +55,9 @@ class Submenu {
 		wp_enqueue_script( 'lms-forms-script' );
 		wp_enqueue_style( 'lms-forms-style' );
 
+		$db = new Database();
+		$courses = $db->get_courses();
+
 		include_once( DCMS_WPFORMS_PATH . '/views/report.php' );
 	}
 }

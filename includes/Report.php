@@ -8,8 +8,25 @@ class Report {
 		add_action( 'wp_ajax_dcms_lms_search_entries', [ $this, 'lms_search_entries' ] );
 	}
 
-	public function lms_search_entries():void{
-		error_log(print_r('Reporte!!!',true));
-		wp_send_json(['message'=>'']);
+	public function lms_search_entries(): void {
+		dcms_nonce_verification();
+
+		$course    = $_POST['course'];
+		$date_from = $_POST['dateFrom'];
+		$date_to   = $_POST['dateTo'];
+
+		if ( $_POST['dateFrom'] ){
+			$date_from = date( 'Y-m-d', strtotime( $_POST['dateFrom'] ) );
+		}
+
+		if ( $_POST['dateTo'] ){
+			$date_to = date( 'Y-m-d', strtotime( $_POST['dateTo'] ) );
+		}
+
+		if ( ! $course ) {
+			wp_send_json( [ 'message' => 'Selecciona algún curso' ] );
+		}
+
+		wp_send_json( [ 'message' => '' ] );
 	}
 }

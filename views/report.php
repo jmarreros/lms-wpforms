@@ -10,9 +10,9 @@
                     <label for="date-range">Fechas:</label>
                 </th>
                 <td>
-                    <label for="date-range-1">Desde:</label>
+                    <label for="date-from">Desde:</label>
                     <input type="date" name="date-from" id="date-from">
-                    <label for="date-range-2">Hasta:</label>
+                    <label for="date-to">Hasta:</label>
                     <input type="date" name="date-to" id="date-to">
                 </td>
                 <td></td>
@@ -50,10 +50,12 @@
                 <th>FO-AC-04</th>
                 <th>FO-AC-05</th>
                 <th>FO-AC-06</th>
+                <th>Detalles</th>
             </tr>
             </thead>
             <tbody>
             <tr>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>

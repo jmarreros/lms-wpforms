@@ -21,7 +21,7 @@ class Configuration {
 	}
 
 	public function lms_forms_save_fields(): void {
-		$this->nonce_verification();
+		dcms_nonce_verification();
 
 		$fields = $_POST['fields'] ?? [];
 
@@ -31,10 +31,4 @@ class Configuration {
 		wp_send_json( [ 'message' => 'Fields saved' ] );
 	}
 
-	private function nonce_verification(): void {
-		$nonce = $_POST['nonce'];
-		if ( ! wp_verify_nonce( $nonce, 'ajax-nonce-lms-forms' ) ) {
-			wp_send_json( [ 'message' => 'Nonce error' ] );
-		}
-	}
 }

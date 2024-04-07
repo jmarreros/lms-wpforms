@@ -1,7 +1,7 @@
 (function ($) {
     'use strict';
 
-    // Get brands or models from API, popup window
+    // Save configuration fields
     $('#btn-save-fields').click(function (e) {
         e.preventDefault();
 
@@ -48,8 +48,13 @@
     });
 
 
+    // For filtering, reporting screen
     $('#search-entries').click(function (e) {
         e.preventDefault();
+
+        const dateFrom = $('#date-from').val();
+        const dateTo = $('#date-to').val();
+        const course = $('#list-courses').val();
 
         $.ajax({
             url: lms_forms.ajaxurl,
@@ -57,19 +62,24 @@
             dataType: 'json',
             data: {
                 action: 'dcms_lms_search_entries',
+                dateFrom: dateFrom,
+                dateTo: dateTo,
+                course: course,
                 nonce: lms_forms.nonce_lms_forms,
             }, beforeSend: function () {
-                $('#container-report .button').prop('disabled', true);
+                $('#container-report input').prop('disabled', true);
+                $('#container-report select').prop('disabled', true);
                 $('#container-report .loading').removeClass('hide');
             }
         })
-        .done(function (res) {
-            $('#container-report .msg-btn').text(res.message);
-        })
-        .always(function () {
-            $('#container-report .button').prop('disabled', false);
-            $('#container-report .loading').addClass('hide');
-        });
+            .done(function (res) {
+                $('#container-report .msg-btn').text(res.message);
+            })
+            .always(function () {
+                $('#container-report input').prop('disabled', false);
+                $('#container-report select').prop('disabled', false);
+                $('#container-report .loading').addClass('hide');
+            });
 
     });
 

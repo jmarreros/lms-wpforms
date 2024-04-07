@@ -21,6 +21,7 @@ use dcms\lms_forms\includes\Submenu;
 use dcms\lms_forms\includes\Form;
 use dcms\lms_forms\includes\Configuration;
 use dcms\lms_forms\includes\Enqueue;
+use dcms\lms_forms\includes\Report;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -70,6 +71,7 @@ final class Loader {
 		new Enqueue();
 		new Form();
 		new Configuration();
+		new Report();
 	}
 }
 

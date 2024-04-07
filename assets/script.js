@@ -47,4 +47,30 @@
         $(this).closest('tr').addClass('changed');
     });
 
+
+    $('#search-entries').click(function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: lms_forms.ajaxurl,
+            type: 'post',
+            dataType: 'json',
+            data: {
+                action: 'dcms_lms_search_entries',
+                nonce: lms_forms.nonce_lms_forms,
+            }, beforeSend: function () {
+                $('#container-report .button').prop('disabled', true);
+                $('#container-report .loading').removeClass('hide');
+            }
+        })
+        .done(function (res) {
+            $('#container-report .msg-btn').text(res.message);
+        })
+        .always(function () {
+            $('#container-report .button').prop('disabled', false);
+            $('#container-report .loading').addClass('hide');
+        });
+
+    });
+
 })(jQuery);

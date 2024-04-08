@@ -27,6 +27,18 @@ class Report {
 			wp_send_json( [ 'message' => 'Selecciona algún curso' ] );
 		}
 
-		wp_send_json( [ 'message' => '' ] );
+		$db = new Database();
+		$result  = $db->get_entries_report( $course, $date_from, $date_to);
+
+		if ( ! $result ) {
+			wp_send_json( [ 'message' => 'No se encontraron registros' ] );
+		}
+
+		wp_send_json(
+			[
+				'message' => 'success',
+				'data'  => $result
+			]
+		);
 	}
 }

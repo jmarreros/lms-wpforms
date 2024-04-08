@@ -175,4 +175,34 @@ class Database {
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
+
+	public function get_entries_report( $id_course, $from, $to ): array {
+		$post_table   = $this->wpdb->posts;
+		$user_table   = $this->wpdb->users;
+		$author_table = $this->wpdb->users;
+
+		$sql = "SELECT i.*, 
+       				u.display_name user_name, 
+       				c.post_title course_name,
+       				a.display_name author_name
+				FROM $this->table_items i
+				INNER JOIN $user_table u ON i.user_id = u.ID
+				INNER JOIN $post_table c ON i.course_id = c.ID
+				INNER JOIN $author_table a ON i.author_id = a.ID
+				WHERE i.course_id = $id_course";
+
+		if ( $from && $to ) {
+			$sql .= " AND DATE(i.updated) BETWEEN '$from' AND '$to'";
+		}
+
+		if ( $from && ! $to ) {
+			$sql .= " AND DATE(i.updated) >= '$from'";
+		}
+
+		if ( ! $from && $to ) {
+			$sql .= " AND DATE(i.updated) <= '$to'";
+		}
+
+		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
+	}
 }

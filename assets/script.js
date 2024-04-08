@@ -73,7 +73,31 @@
             }
         })
             .done(function (res) {
-                $('#container-report .msg-btn').text(res.message);
+                if (res.message === 'success') {
+
+                    let count = 0;
+                    let r = Array();
+                    let j = -1;
+                    for (let i = 0; i < res.data.length; i++) {
+                        r[++j] = "<tr><td>";
+                        r[++j] = res.data[i].course_name;
+                        r[++j] = "</td><td>";
+                        r[++j] = res.data[i].user_name;
+                        r[++j] = "</td><td>";
+                        r[++j] = res.data[i].author_name;
+                        r[++j] = "</td><td>";
+                        r[++j] = "x";
+                        r[++j] = "</td><td>";
+                        r[++j] = "y";
+                        r[++j] = "</td><td>";
+                        r[++j] = "z";
+                        r[++j] = "</td><td>";
+                        r[++j] = "detalles";
+                        r[++j] = "</td></tr>";
+                    }
+
+                    $('#table-report tbody').html(r.join(''));
+                }
             })
             .always(function () {
                 $('#container-report input').prop('disabled', false);

@@ -30,10 +30,6 @@ class Report {
 		$db = new Database();
 		$result  = $db->get_entries_report( $course, $date_from, $date_to);
 
-		if ( ! $result ) {
-			wp_send_json( [ 'message' => 'No se encontraron registros' ] );
-		}
-
 		wp_send_json(
 			[
 				'message' => 'success',

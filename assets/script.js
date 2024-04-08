@@ -56,6 +56,8 @@
         const dateTo = $('#date-to').val();
         const course = $('#list-courses').val();
 
+
+
         $.ajax({
             url: lms_forms.ajaxurl,
             type: 'post',
@@ -79,6 +81,7 @@
                     let r = Array();
                     let j = -1;
                     for (let i = 0; i < res.data.length; i++) {
+                        const entry_url = lms_forms.entries_url + res.data[i].entry_id_wpforms;
                         r[++j] = "<tr><td>";
                         r[++j] = res.data[i].course_name;
                         r[++j] = "</td><td>";
@@ -86,15 +89,17 @@
                         r[++j] = "</td><td>";
                         r[++j] = res.data[i].author_name;
                         r[++j] = "</td><td>";
-                        r[++j] = "x";
+                        r[++j] = "-";
                         r[++j] = "</td><td>";
-                        r[++j] = "y";
+                        r[++j] = "-";
                         r[++j] = "</td><td>";
-                        r[++j] = "z";
+                        r[++j] = "-";
                         r[++j] = "</td><td>";
-                        r[++j] = "detalles";
+                        r[++j] = "<a href='" + entry_url + "' target='_blank'>Ver</a>";
                         r[++j] = "</td></tr>";
                     }
+
+                    console.log(r);
 
                     $('#table-report tbody').html(r.join(''));
                 }

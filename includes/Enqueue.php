@@ -20,6 +20,7 @@ class Enqueue {
 		wp_localize_script( 'lms-forms-script',
 			'lms_forms',
 			[
+				'entries_url' => admin_url( 'admin.php?page=wpforms-entries&view=details&entry_id=' ),
 				'ajaxurl'    => admin_url( 'admin-ajax.php' ),
 				'nonce_lms_forms'    => wp_create_nonce( 'ajax-nonce-lms-forms' ),
 				'sending'    => __( 'Enviando...', 'dcms-lms-forms' ),

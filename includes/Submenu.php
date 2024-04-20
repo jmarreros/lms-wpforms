@@ -47,7 +47,7 @@ class Submenu {
 		$fields  = $form->get_fields_configuration();
 		$groups = FieldGroup::get_groups();
 
-		include_once( DCMS_WPFORMS_PATH . '/views/main-screen.php' );
+		include_once( DCMS_WPFORMS_PATH . '/views/configuration.php' );
 	}
 
 	// Report page callback
@@ -58,6 +58,6 @@ class Submenu {
 		$db = new Database();
 		$courses = $db->get_courses();
 
-		include_once( DCMS_WPFORMS_PATH . '/views/report.php' );
+		include_once( DCMS_WPFORMS_PATH . '/views/main.php' );
 	}
 }

@@ -11,7 +11,7 @@
             </td>
             <td>
                 <strong>
-                    Version 2.0
+                    Versión <?= $versions[ $document_name ] ?>
                 </strong>
             </td>
         </tr>
@@ -21,13 +21,13 @@
             </td>
             <td>
                 <strong>
-                    FO-AC-04
+					<?= $document_name ?>
                 </strong>
             </td>
             <td>
                 <span>
                     Fecha de aprobación
-                    <br>26-01-2024
+                    <br>
                 </span>
             </td>
         </tr>

@@ -77,10 +77,15 @@
             .done(function (res) {
                 if (res.message === 'success') {
 
-                    let count = 0;
                     let r = Array();
                     let j = -1;
+
+                    const documents_url = lms_forms.documents.map((document) => {
+                        return lms_forms.admin_url + '&view=detail&document_name=' + document + '&item_id=';
+                    });
+
                     for (let i = 0; i < res.data.length; i++) {
+
                         const entry_url = lms_forms.entries_url + res.data[i].entry_id_wpforms;
                         r[++j] = "<tr><td>";
                         r[++j] = res.data[i].course_name;
@@ -89,17 +94,15 @@
                         r[++j] = "</td><td>";
                         r[++j] = res.data[i].author_name;
                         r[++j] = "</td><td>";
-                        r[++j] = "-";
+                        r[++j] = "<a href='" + documents_url[0] + res.data[i].id + "' target='_blank'>Ver</a>";
                         r[++j] = "</td><td>";
-                        r[++j] = "-";
+                        r[++j] = "<a href='" + documents_url[1] + res.data[i].id + "' target='_blank'>Ver</a>";
                         r[++j] = "</td><td>";
-                        r[++j] = "-";
+                        r[++j] = "<a href='" + documents_url[2] + res.data[i].id + "' target='_blank'>Ver</a>";
                         r[++j] = "</td><td>";
                         r[++j] = "<a href='" + entry_url + "' target='_blank'>Ver</a>";
                         r[++j] = "</td></tr>";
                     }
-
-                    console.log(r);
 
                     $('#table-report tbody').html(r.join(''));
                 }

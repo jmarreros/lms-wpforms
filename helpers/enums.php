@@ -21,5 +21,13 @@ abstract class FieldGroup
 			self::FO_AC_06
 		];
 	}
+
+	public static function get_versions():array{
+		return [
+			self::FO_AC_04 => '3.0',
+			self::FO_AC_05 => '2.0',
+			self::FO_AC_06 => '2.0'
+		];
+	}
 }
 

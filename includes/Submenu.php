@@ -3,7 +3,6 @@
 namespace dcms\lms_forms\includes;
 
 use dcms\lms_forms\helpers\FieldGroup;
-use dcms\lms_forms\helpers\FieldType;
 
 /**
  * Class for creating a dashboard submenu
@@ -45,19 +44,43 @@ class Submenu {
 		$form    = new Form();
 		$id_form = get_option( DCMS_WPFORMS_FORM_ID, 0 );
 		$fields  = $form->get_fields_configuration();
-		$groups = FieldGroup::get_groups();
+		$groups  = FieldGroup::get_groups();
 
 		include_once( DCMS_WPFORMS_PATH . '/views/configuration.php' );
 	}
 
-	// Report page callback
+	// Report page callback, report and report detail view
 	public function report_page_callback(): void {
 		wp_enqueue_script( 'lms-forms-script' );
 		wp_enqueue_style( 'lms-forms-style' );
 
-		$db = new Database();
-		$courses = $db->get_courses();
 
-		include_once( DCMS_WPFORMS_PATH . '/views/main.php' );
+		$item_id       = $_GET['item_id'] ?? '';
+		$document_name = $_GET['document_name'] ?? '';
+		$view          = $_GET['view'] ?? 'report';
+		$db            = new Database();
+
+
+		// Main report view
+		if ( $view === 'report'  ) {
+			$courses = $db->get_courses();
+
+			include_once DCMS_WPFORMS_PATH . '/views/report.php';
+		} // Detail report view
+		elseif ( $view === 'detail' ){
+
+			// Validate document
+			$documents = FieldGroup::get_groups();
+			$versions  = FieldGroup::get_versions();
+
+			if ( ! $document_name || ! in_array( $document_name, $documents ) ) {
+				wp_die( 'No valid document selected' );
+			}
+
+			$item         = $db->get_entry_by_id( $item_id );
+			$item_details = $db->get_items_details( $item_id, $document_name );
+
+			include_once DCMS_WPFORMS_PATH . '/views/report-detail.php';
+		}
 	}
 }

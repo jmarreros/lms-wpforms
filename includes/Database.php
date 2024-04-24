@@ -221,8 +221,6 @@ class Database {
 				INNER JOIN $post_table p ON i.course_id = p.ID
 				WHERE i.id = $id";
 
-		error_log(print_r($sql,true));
-
 		return $this->wpdb->get_row( $sql, ARRAY_A ) ?? [];
 	}
 

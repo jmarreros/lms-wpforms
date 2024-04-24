@@ -21,3 +21,9 @@ function dcms_nonce_verification(): void {
 		wp_send_json( [ 'message' => 'Nonce error' ] );
 	}
 }
+
+function get_type_items($items, $type):array{
+	return array_filter($items, function($value) use ($type){
+		return $value['field_type']==$type;
+	});
+}

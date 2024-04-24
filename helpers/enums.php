@@ -29,5 +29,14 @@ abstract class FieldGroup
 			self::FO_AC_06 => '2.0'
 		];
 	}
+
+	public static function get_dates():array{
+		return [
+			self::FO_AC_04 => '26-01-2024',
+			self::FO_AC_05 => '17-01-2024',
+			self::FO_AC_06 => '17-01-2024'
+		];
+	}
+
 }
 

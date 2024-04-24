@@ -1,3 +1,25 @@
+<?php
+$ratings   = get_type_items( $item_details, 'rating' );
+$questions = get_type_items( $item_details, 'checkbox' );
+$comments  = get_type_items( $item_details, 'textarea' );
+
+// Sum ratings column
+$count_rating_columns = array_count_values( array_column( $ratings, 'field_value' ) );
+for ( $i = 1; $i <= 5; $i ++ ) {
+	if ( ! isset( $count_rating_columns[ $i ] ) ) {
+		$count_rating_columns[ $i ] = 0;
+	}
+}
+
+// Calculate total per colum in an array
+$total        = 0;
+$total_column = [];
+foreach ( $count_rating_columns as $key => $value ) {
+	$total_column[ $key ] = $key * $value;
+	$total                += $key * $value;
+}
+
+?>
 <div class="wrap report">
     <table class="document">
         <tr>
@@ -28,6 +50,7 @@
                 <span>
                     Fecha de aprobación
                     <br>
+                    <?= $dates[ $document_name ] ?>
                 </span>
             </td>
         </tr>
@@ -36,18 +59,18 @@
                 <div class="header-bottom">
                     <div>
                         <div>
-                            <span>Entrenamiento:</span>
-                            <span>CURSO DE EJEMPLO PARA EMPRENDEDORES</span>
+                            <span><strong>Entrenamiento:</strong></span>
+                            <span><?= $item['course_name'] ?></span>
                         </div>
                         <div>
-                            <span>Formador:</span>
-                            <span>Jhon Marreros Guzmán</span>
+                            <span><strong>Formador:</strong></span>
+                            <span><?= $item['author_name'] ?></span>
                         </div>
                     </div>
                     <div>
                         <div>
-                            <span>Fecha culminación:</span>
-                            <span>10/01/2024</span>
+                            <span><strong>Fecha culminación:</strong></span>
+                            <span><?= wp_date( get_option( 'date_format' ), strtotime( $item['updated'] ) ) ?></span>
                         </div>
                     </div>
                 </div>
@@ -64,23 +87,24 @@
             <th>Bueno</th>
             <th>Excelente</th>
         </tr>
-        <tr>
-            <td>En término general, como ha sido su
-                experiencia con las clases en línea
-            </td>
-            <td>1</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
+		<?php
+		// For rating
+		foreach ( $ratings as $rating ):
+			echo "<tr>";
+			echo "<td>" . $rating['field_label'] . "</td>";
+			for ( $i = 1; $i <= 5; $i ++ ) {
+				echo "<td>" . ( $rating['field_value'] == $i ? $i : '' ) . "</td>";
+			}
+			echo "</tr>";
+		endforeach;
+		?>
         <tr>
             <td><strong>Promedio</strong></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><strong>4</strong></td>
-            <td><strong>5</strong></td>
+			<?php
+			for ( $i = 1; $i <= 5; $i ++ ) {
+				echo "<td><strong>" . ( isset( $total_column[ $i ] ) ? $total_column[ $i ] : '' ) . "</strong></td>";
+			}
+			?>
         </tr>
         <tr>
             <td><strong>Evaluación</strong></td>

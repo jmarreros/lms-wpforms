@@ -62,16 +62,17 @@ class Submenu {
 
 
 		// Main report view
-		if ( $view === 'report'  ) {
+		if ( $view === 'report' ) {
 			$courses = $db->get_courses();
 
 			include_once DCMS_WPFORMS_PATH . '/views/report.php';
 		} // Detail report view
-		elseif ( $view === 'detail' ){
+		elseif ( $view === 'detail' ) {
 
 			// Validate document
 			$documents = FieldGroup::get_groups();
 			$versions  = FieldGroup::get_versions();
+			$dates     = FieldGroup::get_dates();
 
 			if ( ! $document_name || ! in_array( $document_name, $documents ) ) {
 				wp_die( 'No valid document selected' );

@@ -7,19 +7,7 @@
             <tbody>
             <tr>
                 <th scope="row">
-                    <label for="date-range">Fechas:</label>
-                </th>
-                <td>
-                    <label for="date-from">Desde:</label>
-                    <input type="date" name="date-from" id="date-from">
-                    <label for="date-to">Hasta:</label>
-                    <input type="date" name="date-to" id="date-to">
-                </td>
-                <td></td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="list-courses">Curso:</label>
+                    <label for="list-courses">Entrenamiento:</label>
                 </th>
                 <td>
                     <select name="list-courses" id="list-courses">
@@ -41,24 +29,34 @@
         </table>
 
         <hr>
-        <table id="table-report" class="table-report">
+        <h2 class="title">Resumen Evaluación</h2>
+        <table id="table-summary-report" class="table-report">
+            <tr>
+                <th>Entrenamiento</th>
+                <td id="course_name"></td>
+            </tr>
+            <tr>
+                <th>Formador</th>
+                <td id="course_author"></td>
+            </tr>
+            <tr>
+                <th id="course_documents">Documentos</th>
+                <td></td>
+            </tr>
+
+        </table>
+
+        <h2 class="title">Detalle Evaluación</h2>
+        <table id="table-entries-report" class="table-report">
             <thead>
             <tr>
-                <th>Curso</th>
                 <th>Alumno</th>
-                <th>Profesor</th>
-                <th>FO-AC-04</th>
-                <th>FO-AC-05</th>
-                <th>FO-AC-06</th>
+                <th>Culminación</th>
                 <th>Detalles</th>
             </tr>
             </thead>
             <tbody>
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>

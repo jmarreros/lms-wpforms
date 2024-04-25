@@ -176,12 +176,13 @@ class Database {
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 
-	public function get_entries_report( $id_course, $from, $to ): array {
+
+	public function get_entries_report( $id_course ): array {
 		$post_table   = $this->wpdb->posts;
 		$user_table   = $this->wpdb->users;
 		$author_table = $this->wpdb->users;
 
-		$sql = "SELECT i.*, 
+		$sql = "SELECT DATE_FORMAT(i.updated, '%d/%m/%Y') updated,
        				u.display_name user_name, 
        				c.post_title course_name,
        				a.display_name author_name
@@ -190,18 +191,6 @@ class Database {
 				INNER JOIN $post_table c ON i.course_id = c.ID
 				INNER JOIN $author_table a ON i.author_id = a.ID
 				WHERE i.course_id = $id_course";
-
-		if ( $from && $to ) {
-			$sql .= " AND DATE(i.updated) BETWEEN '$from' AND '$to'";
-		}
-
-		if ( $from && ! $to ) {
-			$sql .= " AND DATE(i.updated) >= '$from'";
-		}
-
-		if ( ! $from && $to ) {
-			$sql .= " AND DATE(i.updated) <= '$to'";
-		}
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
@@ -225,13 +214,13 @@ class Database {
 	}
 
 	// Get items fields with values for reporting
-	public function get_items_details($id_item, $document):array{
+	public function get_items_details( $id_item, $document ): array {
 		$sql = "SELECT f.*, d.field_value 
 				FROM $this->table_fields f
 				INNER JOIN $this->table_item_detail d ON f.field_id_wpforms = d.field_id
 				WHERE d.id_item = $id_item AND f.field_group = '$document'
 				ORDER BY f.field_type, f.field_order";
 
-		return $this->wpdb->get_results($sql, ARRAY_A) ?? [];
+		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 }

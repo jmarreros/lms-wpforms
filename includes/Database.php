@@ -195,33 +195,69 @@ class Database {
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 
-//	public function get_entry_by_id( $id ): array {
-//		$post_table   = $this->wpdb->posts;
-//		$user_table   = $this->wpdb->users;
-//		$author_table = $this->wpdb->users;
-//
-//		$sql = "SELECT i.*,
-//			       u.display_name user_name,
-//			       a.display_name author_name,
-//			       p.post_title course_name
-//				FROM $this->table_items i
-//				INNER JOIN $user_table u ON i.user_id = u.ID
-//				INNER JOIN $author_table a ON i.author_id = a.ID
-//				INNER JOIN $post_table p ON i.course_id = p.ID
-//				WHERE i.id = $id";
-//
-//		return $this->wpdb->get_row( $sql, ARRAY_A ) ?? [];
-//	}
-//
-//	// Get items fields with values for reporting
-//	public function get_items_details( $id_item, $document ): array {
-//		$sql = "SELECT f.*, d.field_value
-//				FROM $this->table_fields f
-//				INNER JOIN $this->table_item_detail d ON f.field_id_wpforms = d.field_id
-//				WHERE d.id_item = $id_item AND f.field_group = '$document'
-//				ORDER BY f.field_type, f.field_order";
-//
-//		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
-//	}
+
+	// Get items rating type fields with grouped values for reporting
+	public function get_items_report_rating($course_id, $document): array {
+		$sql = "SELECT 
+					f.field_label,
+					f.field_order,
+					SUM(d.field_value) AS field_value
+				FROM $this->table_fields  f
+				INNER JOIN $this->table_item_detail d ON f.field_id_wpforms = d.field_id
+				INNER JOIN $this->table_items i ON i.id = d.id_item
+				WHERE 
+					i.course_id = $course_id AND
+					f.field_group = '$document' AND 
+					f.field_type = 'rating' AND
+					f.is_active = 1
+				GROUP BY f.field_label,f.field_order
+				ORDER BY f.field_order";
+
+		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
+	}
+
+
+	// Get items checkbox type fields with grouped values for reporting
+	public function get_items_report_checkbox($course_id, $document): array {
+		$sql = "SELECT 
+					f.field_label,
+					f.field_options,
+					f.field_order,
+					d.field_value,
+					COUNT(d.field_value) AS field_count
+				FROM $this->table_fields  f
+				INNER JOIN $this->table_item_detail d ON f.field_id_wpforms = d.field_id
+				INNER JOIN $this->table_items i ON i.id = d.id_item
+				WHERE 
+					i.course_id = $course_id AND
+					f.field_group = '$document' AND 
+					f.field_type = 'checkbox' AND
+					f.is_active = 1
+				GROUP BY f.field_label, f.field_options, d.field_value, f.field_order
+				ORDER BY f.field_order";
+
+		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
+	}
+
+
+	// Get items comments type fields values for reporting
+	public function get_items_report_comments($course_id, $document): array {
+		$sql = "SELECT 
+					f.field_label,
+					f.field_order,
+					d.field_value
+				FROM $this->table_fields  f
+				INNER JOIN $this->table_item_detail d ON f.field_id_wpforms = d.field_id
+				INNER JOIN $this->table_items i ON i.id = d.id_item
+				WHERE 
+					i.course_id = $course_id AND
+					f.field_group = '$document' AND 
+					f.field_type = 'textarea' AND
+					f.is_active = 1
+				ORDER BY f.field_order";
+
+		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
+	}
+
 
 }

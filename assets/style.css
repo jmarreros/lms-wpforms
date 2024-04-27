@@ -39,6 +39,11 @@
     max-width:670px;
 }
 
+.documents a{
+    display:none;
+    margin-left:5px;
+}
+
 #table-entries-report tr th:not(:first-child),
 #table-entries-report tr td:not(:first-child) {
     width: 100px;

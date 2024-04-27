@@ -41,7 +41,12 @@
             </tr>
             <tr>
                 <th id="course_documents">Documentos</th>
-                <td></td>
+                <td class="documents">
+					<?php $document_url = admin_url( 'admin.php?page=dcms-lms-forms-report' ) . '&view=detail&document_name=FO-AC-'; ?>
+                    <a id="fo-ac-04" href="<?= $document_url . '04' ?>">FO-AC-04</a>
+                    <a id="fo-ac-05" href="<?= $document_url . '05' ?>">FO-AC-05</a>
+                    <a id="fo-ac-06" href="<?= $document_url . '06' ?>">FO-AC-06</a>
+                </td>
             </tr>
 
         </table>

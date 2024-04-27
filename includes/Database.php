@@ -195,32 +195,33 @@ class Database {
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 
-	public function get_entry_by_id( $id ): array {
-		$post_table   = $this->wpdb->posts;
-		$user_table   = $this->wpdb->users;
-		$author_table = $this->wpdb->users;
+//	public function get_entry_by_id( $id ): array {
+//		$post_table   = $this->wpdb->posts;
+//		$user_table   = $this->wpdb->users;
+//		$author_table = $this->wpdb->users;
+//
+//		$sql = "SELECT i.*,
+//			       u.display_name user_name,
+//			       a.display_name author_name,
+//			       p.post_title course_name
+//				FROM $this->table_items i
+//				INNER JOIN $user_table u ON i.user_id = u.ID
+//				INNER JOIN $author_table a ON i.author_id = a.ID
+//				INNER JOIN $post_table p ON i.course_id = p.ID
+//				WHERE i.id = $id";
+//
+//		return $this->wpdb->get_row( $sql, ARRAY_A ) ?? [];
+//	}
+//
+//	// Get items fields with values for reporting
+//	public function get_items_details( $id_item, $document ): array {
+//		$sql = "SELECT f.*, d.field_value
+//				FROM $this->table_fields f
+//				INNER JOIN $this->table_item_detail d ON f.field_id_wpforms = d.field_id
+//				WHERE d.id_item = $id_item AND f.field_group = '$document'
+//				ORDER BY f.field_type, f.field_order";
+//
+//		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
+//	}
 
-		$sql = "SELECT i.*, 
-			       u.display_name user_name, 
-			       a.display_name author_name, 
-			       p.post_title course_name 
-				FROM $this->table_items i
-				INNER JOIN $user_table u ON i.user_id = u.ID
-				INNER JOIN $author_table a ON i.author_id = a.ID
-				INNER JOIN $post_table p ON i.course_id = p.ID
-				WHERE i.id = $id";
-
-		return $this->wpdb->get_row( $sql, ARRAY_A ) ?? [];
-	}
-
-	// Get items fields with values for reporting
-	public function get_items_details( $id_item, $document ): array {
-		$sql = "SELECT f.*, d.field_value 
-				FROM $this->table_fields f
-				INNER JOIN $this->table_item_detail d ON f.field_id_wpforms = d.field_id
-				WHERE d.id_item = $id_item AND f.field_group = '$document'
-				ORDER BY f.field_type, f.field_order";
-
-		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
-	}
 }

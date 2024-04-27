@@ -22,7 +22,6 @@ class Enqueue {
 		wp_localize_script( 'lms-forms-script',
 			'lms_forms',
 			[
-				'admin_url'       => admin_url( 'admin.php?page=dcms-lms-forms-report' ),
 				'documents'       => FieldGroup::get_groups(),
 				'entries_url'     => admin_url( 'admin.php?page=wpforms-entries&view=details&entry_id=' ),
 				'ajaxurl'         => admin_url( 'admin-ajax.php' ),

@@ -1,23 +1,23 @@
 <?php
-$ratings   = get_type_items( $item_details, 'rating' );
-$questions = get_type_items( $item_details, 'checkbox' );
-$comments  = get_type_items( $item_details, 'textarea' );
-
-// Sum ratings column
-$count_rating_columns = array_count_values( array_column( $ratings, 'field_value' ) );
-for ( $i = 1; $i <= 5; $i ++ ) {
-	if ( ! isset( $count_rating_columns[ $i ] ) ) {
-		$count_rating_columns[ $i ] = 0;
-	}
-}
-
-// Calculate total per colum in an array
-$total        = 0;
-$total_column = [];
-foreach ( $count_rating_columns as $key => $value ) {
-	$total_column[ $key ] = $key * $value;
-	$total                += $key * $value;
-}
+//$ratings   = get_type_items( $item_details, 'rating' );
+//$questions = get_type_items( $item_details, 'checkbox' );
+//$comments  = get_type_items( $item_details, 'textarea' );
+//
+//// Sum ratings column
+//$count_rating_columns = array_count_values( array_column( $ratings, 'field_value' ) );
+//for ( $i = 1; $i <= 5; $i ++ ) {
+//	if ( ! isset( $count_rating_columns[ $i ] ) ) {
+//		$count_rating_columns[ $i ] = 0;
+//	}
+//}
+//
+//// Calculate total per colum in an array
+//$total        = 0;
+//$total_column = [];
+//foreach ( $count_rating_columns as $key => $value ) {
+//	$total_column[ $key ] = $key * $value;
+//	$total                += $key * $value;
+//}
 
 ?>
 <div class="wrap report">
@@ -33,7 +33,7 @@ foreach ( $count_rating_columns as $key => $value ) {
             </td>
             <td>
                 <strong>
-                    Versión <?= $versions[ $document_name ] ?>
+<!--                    Versión --><?php //= $versions[ $document_name ] ?>
                 </strong>
             </td>
         </tr>
@@ -43,14 +43,14 @@ foreach ( $count_rating_columns as $key => $value ) {
             </td>
             <td>
                 <strong>
-					<?= $document_name ?>
+<!--					--><?php //= $document_name ?>
                 </strong>
             </td>
             <td>
                 <span>
                     Fecha de aprobación
                     <br>
-                    <?= $dates[ $document_name ] ?>
+<!--                    --><?php //= $dates[ $document_name ] ?>
                 </span>
             </td>
         </tr>
@@ -60,17 +60,17 @@ foreach ( $count_rating_columns as $key => $value ) {
                     <div>
                         <div>
                             <span><strong>Entrenamiento:</strong></span>
-                            <span><?= $item['course_name'] ?></span>
+                            <span></span>
                         </div>
                         <div>
                             <span><strong>Formador:</strong></span>
-                            <span><?= $item['author_name'] ?></span>
+                            <span></span>
                         </div>
                     </div>
                     <div>
                         <div>
                             <span><strong>Fecha culminación:</strong></span>
-                            <span><?= wp_date( get_option( 'date_format' ), strtotime( $item['updated'] ) ) ?></span>
+                            <span></span>
                         </div>
                     </div>
                 </div>
@@ -88,22 +88,22 @@ foreach ( $count_rating_columns as $key => $value ) {
             <th>Excelente</th>
         </tr>
 		<?php
-		// For rating
-		foreach ( $ratings as $rating ):
-			echo "<tr>";
-			echo "<td>" . $rating['field_label'] . "</td>";
-			for ( $i = 1; $i <= 5; $i ++ ) {
-				echo "<td>" . ( $rating['field_value'] == $i ? $i : '' ) . "</td>";
-			}
-			echo "</tr>";
-		endforeach;
+//		// For rating
+//		foreach ( $ratings as $rating ):
+//			echo "<tr>";
+//			echo "<td>" . $rating['field_label'] . "</td>";
+//			for ( $i = 1; $i <= 5; $i ++ ) {
+//				echo "<td>" . ( $rating['field_value'] == $i ? $i : '' ) . "</td>";
+//			}
+//			echo "</tr>";
+//		endforeach;
 		?>
         <tr>
             <td><strong>Promedio</strong></td>
 			<?php
-			for ( $i = 1; $i <= 5; $i ++ ) {
-				echo "<td><strong>" . ( isset( $total_column[ $i ] ) ? $total_column[ $i ] : '' ) . "</strong></td>";
-			}
+//			for ( $i = 1; $i <= 5; $i ++ ) {
+//				echo "<td><strong>" . ( isset( $total_column[ $i ] ) ? $total_column[ $i ] : '' ) . "</strong></td>";
+//			}
 			?>
         </tr>
         <tr>

@@ -52,9 +52,19 @@
     $('#search-entries').click(function (e) {
         e.preventDefault();
 
-        const dateFrom = $('#date-from').val();
-        const dateTo = $('#date-to').val();
-        const course = $('#list-courses').val();
+        //clean data
+        $('#table-entries-report tbody').html('');
+        $('#course_name').text('');
+        $('#course_author').text('');
+        $('.documents a').hide();
+
+
+        const course = parseInt($('#list-courses').val());
+
+        if (course === 0) {
+            alert('Seleccione un curso');
+            return;
+        }
 
 
         $.ajax({
@@ -63,8 +73,6 @@
             dataType: 'json',
             data: {
                 action: 'dcms_lms_search_entries',
-                dateFrom: dateFrom,
-                dateTo: dateTo,
                 course: course,
                 nonce: lms_forms.nonce_lms_forms,
             }, beforeSend: function () {
@@ -82,10 +90,6 @@
                     $('#course_name').text(res.data[0].course_name ?? '');
                     $('#course_author').text(res.data[0].author_name ?? '');
 
-                    // const documents_url = lms_forms.documents.map((document) => {
-                    //     return lms_forms.admin_url + '&view=detail&document_name=' + document + '&item_id=';
-                    // });
-
                     for (let i = 0; i < res.data.length; i++) {
 
                         const entry_url = lms_forms.entries_url + res.data[i].entry_id_wpforms;
@@ -99,6 +103,9 @@
                     }
 
                     $('#table-entries-report tbody').html(r.join(''));
+                    if (r.length > 0) {
+                        $('.documents a').show();
+                    }
                 }
             })
             .always(function () {
@@ -107,6 +114,13 @@
                 $('#container-report .loading').addClass('hide');
             });
 
+    });
+
+
+    $('.documents a').click(function (e) {
+        e.preventDefault();
+        const url = $(this).attr('href') + '&course=' + $('#list-courses').val();
+        window.open(url, '_blank');
     });
 
 })(jQuery);

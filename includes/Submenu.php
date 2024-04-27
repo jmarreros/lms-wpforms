@@ -78,8 +78,8 @@ class Submenu {
 				wp_die( 'No valid document selected' );
 			}
 
-			$item         = $db->get_entry_by_id( $item_id );
-			$item_details = $db->get_items_details( $item_id, $document_name );
+//			$item         = $db->get_entry_by_id( $item_id );
+//			$item_details = $db->get_items_details( $item_id, $document_name );
 
 			include_once DCMS_WPFORMS_PATH . '/views/report-detail.php';
 		}

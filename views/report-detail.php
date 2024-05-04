@@ -19,6 +19,11 @@
 //	$total                += $key * $value;
 //}
 
+/** @var String[] $header_detail */
+/** @var String $document_name */
+/** @var String[] $versions */
+/** @var String[] $dates */
+
 ?>
 <div class="wrap report">
     <table class="document">
@@ -33,7 +38,7 @@
             </td>
             <td>
                 <strong>
-<!--                    Versión --><?php //= $versions[ $document_name ] ?>
+                    Versión <?= $versions[ $document_name ] ?>
                 </strong>
             </td>
         </tr>
@@ -43,14 +48,14 @@
             </td>
             <td>
                 <strong>
-<!--					--><?php //= $document_name ?>
+					<?= $document_name ?>
                 </strong>
             </td>
             <td>
                 <span>
                     Fecha de aprobación
                     <br>
-<!--                    --><?php //= $dates[ $document_name ] ?>
+                    <?= $dates[ $document_name ] ?>
                 </span>
             </td>
         </tr>
@@ -60,17 +65,17 @@
                     <div>
                         <div>
                             <span><strong>Entrenamiento:</strong></span>
-                            <span></span>
+                            <span><?= $header_detail['course_name'] ?></span>
                         </div>
                         <div>
                             <span><strong>Formador:</strong></span>
-                            <span></span>
+                            <span><?= $header_detail['author_name'] ?></span>
                         </div>
                     </div>
                     <div>
                         <div>
                             <span><strong>Fecha culminación:</strong></span>
-                            <span></span>
+                            <span><?= $header_detail['end_date'] ?></span>
                         </div>
                     </div>
                 </div>
@@ -88,22 +93,22 @@
             <th>Excelente</th>
         </tr>
 		<?php
-//		// For rating
-//		foreach ( $ratings as $rating ):
-//			echo "<tr>";
-//			echo "<td>" . $rating['field_label'] . "</td>";
-//			for ( $i = 1; $i <= 5; $i ++ ) {
-//				echo "<td>" . ( $rating['field_value'] == $i ? $i : '' ) . "</td>";
-//			}
-//			echo "</tr>";
-//		endforeach;
+		//		// For rating
+		//		foreach ( $ratings as $rating ):
+		//			echo "<tr>";
+		//			echo "<td>" . $rating['field_label'] . "</td>";
+		//			for ( $i = 1; $i <= 5; $i ++ ) {
+		//				echo "<td>" . ( $rating['field_value'] == $i ? $i : '' ) . "</td>";
+		//			}
+		//			echo "</tr>";
+		//		endforeach;
 		?>
         <tr>
             <td><strong>Promedio</strong></td>
 			<?php
-//			for ( $i = 1; $i <= 5; $i ++ ) {
-//				echo "<td><strong>" . ( isset( $total_column[ $i ] ) ? $total_column[ $i ] : '' ) . "</strong></td>";
-//			}
+			//			for ( $i = 1; $i <= 5; $i ++ ) {
+			//				echo "<td><strong>" . ( isset( $total_column[ $i ] ) ? $total_column[ $i ] : '' ) . "</strong></td>";
+			//			}
 			?>
         </tr>
         <tr>

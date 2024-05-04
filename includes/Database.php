@@ -177,6 +177,7 @@ class Database {
 	}
 
 
+	// Get items details by item id
 	public function get_entries_report( $id_course ): array {
 		$post_table   = $this->wpdb->posts;
 		$user_table   = $this->wpdb->users;
@@ -195,9 +196,25 @@ class Database {
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 
+	// Get header detail for report
+	public function get_item_report_detail( $course_id ): array {
+		$post_table = $this->wpdb->posts;
+		$user_table = $this->wpdb->users;
+
+		$sql = "SELECT 
+    				DISTINCT 
+    				p.post_title course_name, 
+                	a.display_name author_name 
+				FROM $this->table_items i
+				INNER JOIN $user_table a ON a.ID = i.author_id 
+				INNER JOIN $post_table p ON p.ID = i.course_id
+				WHERE course_id = $course_id";
+
+		return $this->wpdb->get_row( $sql, ARRAY_A ) ?? [];
+	}
 
 	// Get items rating type fields with grouped values for reporting
-	public function get_items_report_rating($course_id, $document): array {
+	public function get_items_report_rating( $course_id, $document ): array {
 		$sql = "SELECT 
 					f.field_label,
 					f.field_order,
@@ -218,7 +235,7 @@ class Database {
 
 
 	// Get items checkbox type fields with grouped values for reporting
-	public function get_items_report_checkbox($course_id, $document): array {
+	public function get_items_report_checkbox( $course_id, $document ): array {
 		$sql = "SELECT 
 					f.field_label,
 					f.field_options,
@@ -241,7 +258,7 @@ class Database {
 
 
 	// Get items comments type fields values for reporting
-	public function get_items_report_comments($course_id, $document): array {
+	public function get_items_report_comments( $course_id, $document ): array {
 		$sql = "SELECT 
 					f.field_label,
 					f.field_order,
@@ -258,6 +275,5 @@ class Database {
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
-
 
 }

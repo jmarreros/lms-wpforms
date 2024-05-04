@@ -55,11 +55,10 @@ class Submenu {
 		wp_enqueue_style( 'lms-forms-style' );
 
 
-		$item_id       = $_GET['item_id'] ?? '';
-		$document_name = $_GET['document_name'] ?? '';
-		$view          = $_GET['view'] ?? 'report';
-		$db            = new Database();
+		$course_id = intval( $_GET['course'] ?? 0 );
+		$view      = $_GET['view'] ?? 'report';
 
+		$db = new Database();
 
 		// Main report view
 		if ( $view === 'report' ) {
@@ -69,17 +68,26 @@ class Submenu {
 		} // Detail report view
 		elseif ( $view === 'detail' ) {
 
-			// Validate document
-			$documents = FieldGroup::get_groups();
-			$versions  = FieldGroup::get_versions();
-			$dates     = FieldGroup::get_dates();
+			// Available document information
+			$document_name = $_GET['document_name'] ?? '';
+			$documents     = FieldGroup::get_groups();
+			$versions      = FieldGroup::get_versions();
+			$dates         = FieldGroup::get_dates();
+			$end_date      = '';
+
 
 			if ( ! $document_name || ! in_array( $document_name, $documents ) ) {
 				wp_die( 'No valid document selected' );
 			}
 
-//			$item         = $db->get_entry_by_id( $item_id );
-//			$item_details = $db->get_items_details( $item_id, $document_name );
+			// Get report details
+			$header_detail = $db->get_item_report_detail( $course_id );
+
+			if ( defined( 'DCMS_COURSE_END_DATE' ) ) {
+				$end_date = get_post_meta( $course_id, DCMS_COURSE_END_DATE, true );
+			}
+
+			$header_detail['end_date'] = $end_date;
 
 			include_once DCMS_WPFORMS_PATH . '/views/report-detail.php';
 		}

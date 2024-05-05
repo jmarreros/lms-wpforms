@@ -89,6 +89,8 @@ class Submenu {
 
 			$header_detail['end_date'] = $end_date;
 
+			$ratings = $db->get_items_report_rating( $course_id, $document_name );
+
 			include_once DCMS_WPFORMS_PATH . '/views/report-detail.php';
 		}
 	}

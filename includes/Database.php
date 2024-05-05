@@ -213,12 +213,11 @@ class Database {
 		return $this->wpdb->get_row( $sql, ARRAY_A ) ?? [];
 	}
 
-	// Get items rating type fields with grouped values for reporting
+	// Get items rating type fields for reporting
 	public function get_items_report_rating( $course_id, $document ): array {
 		$sql = "SELECT 
 					f.field_label,
-					f.field_order,
-					SUM(d.field_value) AS field_value
+					field_value
 				FROM $this->table_fields  f
 				INNER JOIN $this->table_item_detail d ON f.field_id_wpforms = d.field_id
 				INNER JOIN $this->table_items i ON i.id = d.id_item
@@ -227,7 +226,6 @@ class Database {
 					f.field_group = '$document' AND 
 					f.field_type = 'rating' AND
 					f.is_active = 1
-				GROUP BY f.field_label,f.field_order
 				ORDER BY f.field_order";
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];

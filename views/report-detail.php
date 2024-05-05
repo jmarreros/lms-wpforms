@@ -1,28 +1,61 @@
 <?php
-//$ratings   = get_type_items( $item_details, 'rating' );
-//$questions = get_type_items( $item_details, 'checkbox' );
-//$comments  = get_type_items( $item_details, 'textarea' );
-//
-//// Sum ratings column
-//$count_rating_columns = array_count_values( array_column( $ratings, 'field_value' ) );
-//for ( $i = 1; $i <= 5; $i ++ ) {
-//	if ( ! isset( $count_rating_columns[ $i ] ) ) {
-//		$count_rating_columns[ $i ] = 0;
-//	}
-//}
-//
-//// Calculate total per colum in an array
-//$total        = 0;
-//$total_column = [];
-//foreach ( $count_rating_columns as $key => $value ) {
-//	$total_column[ $key ] = $key * $value;
-//	$total                += $key * $value;
-//}
-
 /** @var String[] $header_detail */
 /** @var String $document_name */
 /** @var String[] $versions */
 /** @var String[] $dates */
+/** @var Array $ratings */
+
+// Auxiliar function to get count of each question
+function get_count_question( $question, $ratings ): array {
+	$current_question = array_filter( $ratings, function ( $rating ) use ( $question ) {
+		return $rating['field_label'] == $question;
+	} );
+
+	// Count values
+	$count_current_question = array_count_values(
+		array_column( $current_question, 'field_value' )
+	);
+
+	// Complete the count with 0 values
+	for ( $i = 1; $i <= 5; $i ++ ) {
+		if ( ! isset( $count_current_question[ $i ] ) ) {
+			$count_current_question[ $i ] = 0;
+		}
+	}
+
+	ksort( $count_current_question );
+
+	return $count_current_question;
+}
+
+// Unique column label questions
+$questions = array_unique( array_column( $ratings, 'field_label' ) );
+
+// Loop every question to get count
+$rating_questions = [];
+foreach ( $questions as $question ) {
+	$rating_questions[ $question ] = get_count_question( $question, $ratings );
+}
+
+// Sum count rating by column
+$total_by_rating = [];
+foreach ( $rating_questions as $rating_question ) {
+	foreach ( $rating_question as $key => $value ) {
+		if ( ! isset( $total_by_rating[ $key ] ) ) {
+			$total_by_rating[ $key ] = 0;
+		}
+		$total_by_rating[ $key ] += $value;
+	}
+}
+
+// Total students
+$total_students = array_sum($total_by_rating);
+$total_ideal = $total_students * 5;
+
+$total_real = 0;
+foreach ($total_by_rating as $key => $value) {
+	$total_real += $key * $value;
+}
 
 ?>
 <div class="wrap report">

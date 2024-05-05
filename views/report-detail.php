@@ -4,6 +4,15 @@
 /** @var String[] $versions */
 /** @var String[] $dates */
 /** @var Array $ratings */
+/**
+ * @param $question
+ * @param $ratings
+ *
+ * @return array
+ */
+
+// For ratings
+///--------------------------------
 
 // Auxiliar function to get count of each question
 function get_count_question( $question, $ratings ): array {
@@ -49,13 +58,34 @@ foreach ( $rating_questions as $rating_question ) {
 }
 
 // Total students
-$total_students = array_sum($total_by_rating);
-$total_ideal = $total_students * 5;
+$total_students = array_sum( $total_by_rating );
+$total_ideal    = $total_students * 5;
 
 $total_real = 0;
-foreach ($total_by_rating as $key => $value) {
+foreach ( $total_by_rating as $key => $value ) {
 	$total_real += $key * $value;
 }
+
+$percent_total = round( ( $total_real / $total_ideal ) * 100, 2 );
+
+
+// For checkbox
+///--------------------------------
+
+// Unique column label questions
+$questions = array_unique( array_column( $checkboxes, 'field_label' ) );
+
+error_log(print_r($questions,true));
+
+// Loop every question
+$checkbox_questions = [];
+foreach ( $questions as $question ) {
+	$checkbox_questions[ $question ] = array_filter( $checkboxes, function ( $checkbox ) use ( $question ) {
+        return $checkbox['field_label'] == $question;
+    } );
+}
+
+error_log(print_r($checkbox_questions,true));
 
 ?>
 <div class="wrap report">
@@ -126,27 +156,26 @@ foreach ($total_by_rating as $key => $value) {
             <th>Excelente</th>
         </tr>
 		<?php
-		//		// For rating
-		//		foreach ( $ratings as $rating ):
-		//			echo "<tr>";
-		//			echo "<td>" . $rating['field_label'] . "</td>";
-		//			for ( $i = 1; $i <= 5; $i ++ ) {
-		//				echo "<td>" . ( $rating['field_value'] == $i ? $i : '' ) . "</td>";
-		//			}
-		//			echo "</tr>";
-		//		endforeach;
+		foreach ( $rating_questions as $rating_question => $rating ):
+			echo "<tr>";
+			echo "<td>" . $rating_question . "</td>";
+			for ( $i = 1; $i <= 5; $i ++ ) {
+				echo "<td>" . $rating[ $i ] . "</td>";
+			}
+			echo "</tr>";
+		endforeach;
 		?>
         <tr>
             <td><strong>Promedio</strong></td>
 			<?php
-			//			for ( $i = 1; $i <= 5; $i ++ ) {
-			//				echo "<td><strong>" . ( isset( $total_column[ $i ] ) ? $total_column[ $i ] : '' ) . "</strong></td>";
-			//			}
+			for ( $i = 1; $i <= 5; $i ++ ) {
+				echo "<td><strong>" . $total_by_rating[ $i ] . "</strong></td>";
+			}
 			?>
         </tr>
         <tr>
             <td><strong>Evaluación</strong></td>
-            <td colspan="5"><strong>90%</strong></td>
+            <td colspan="5"><strong><?= $percent_total ?>%</strong></td>
         </tr>
 
     </table>

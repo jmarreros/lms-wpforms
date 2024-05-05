@@ -250,7 +250,7 @@ class Database {
 					f.is_active = 1
 				GROUP BY f.field_label, f.field_options, d.field_value, f.field_order
 				ORDER BY f.field_order";
-
+		
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 

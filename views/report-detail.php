@@ -75,17 +75,13 @@ $percent_total = round( ( $total_real / $total_ideal ) * 100, 2 );
 // Unique column label questions
 $questions = array_unique( array_column( $checkboxes, 'field_label' ) );
 
-error_log(print_r($questions,true));
-
 // Loop every question
 $checkbox_questions = [];
 foreach ( $questions as $question ) {
 	$checkbox_questions[ $question ] = array_filter( $checkboxes, function ( $checkbox ) use ( $question ) {
-        return $checkbox['field_label'] == $question;
-    } );
+		return $checkbox['field_label'] == $question;
+	} );
 }
-
-error_log(print_r($checkbox_questions,true));
 
 ?>
 <div class="wrap report">
@@ -181,13 +177,27 @@ error_log(print_r($checkbox_questions,true));
     </table>
     <br>
     <table class="document tbl-yesno">
-        <tr>
-            <th>Question 1?</th>
-            <td><strong>Si</strong></td>
-            <td>1</td>
-            <td><strong>No</strong></td>
-            <td>0</td>
-        </tr>
+		<?php foreach ( $checkbox_questions as $question_text => $checkbox_question ): ?>
+            <tr>
+                <th><?= $question_text ?></th>
+				<?php
+				$options = explode( '|', $checkbox_question[0]['field_options'] ?? '' );
+
+				foreach ( $options as $option ) {
+					echo "<td><strong>" . $option . "</strong></td>";
+
+					$key = array_search( $option, array_column( $checkbox_question, 'field_value' ) );
+					if ( $key !== false ) {
+						echo "<td>" . $checkbox_question[ $key ]['field_count'] . "</td>";
+					} else {
+						echo "<td>0</td>";
+					}
+
+				}
+				?>
+            </tr>
+		<?php endforeach; ?>
+
     </table>
 
     <br>

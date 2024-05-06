@@ -8,6 +8,16 @@ abstract class FieldType
 	const Textarea = 'textarea';
 }
 
+abstract class Rating{
+	const RATING_VALUES = [
+		1 => 0,
+		2 => 0.2,
+		3 => 0.5,
+		4 => 0.7,
+		5 => 1
+	];
+}
+
 abstract class FieldGroup
 {
 	const FO_AC_04 = 'FO-AC-04';

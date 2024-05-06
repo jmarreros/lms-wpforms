@@ -4,6 +4,11 @@
 /** @var String[] $versions */
 /** @var String[] $dates */
 /** @var Array $ratings */
+
+/** @var Array $comments */
+
+use dcms\lms_forms\helpers\Rating;
+
 /**
  * @param $question
  * @param $ratings
@@ -59,12 +64,13 @@ foreach ( $rating_questions as $rating_question ) {
 
 // Total students
 $total_students = array_sum( $total_by_rating );
-$total_ideal    = $total_students * 5;
+$total_ideal    = $total_students * Rating::RATING_VALUES[5];
 
 $total_real = 0;
 foreach ( $total_by_rating as $key => $value ) {
-	$total_real += $key * $value;
+	$total_real += Rating::RATING_VALUES[ $key ] * $value;
 }
+
 
 $percent_total = round( ( $total_real / $total_ideal ) * 100, 2 );
 
@@ -205,9 +211,13 @@ foreach ( $questions as $question ) {
         <tr>
             <th>Comentarios</th>
         </tr>
-        <tr>
-            <td></td>
-        </tr>
+		<?php foreach ( $comments as $comment ): ?>
+            <tr>
+                <td>
+					<?= $comment['field_value'] ?>
+                </td>
+            </tr>
+		<?php endforeach; ?>
     </table>
 
     <style>
@@ -255,6 +265,10 @@ foreach ( $questions as $question ) {
             margin-top: 16px;
         }
 
+        .tbl-comments td {
+            text-align: left;
+        }
+
         .tbl-yesno tr th,
         .tbl-rating tr th,
         .tbl-comments tr th {
@@ -267,6 +281,10 @@ foreach ( $questions as $question ) {
         .tbl-yesno tr th {
             border-top: 1px solid grey;
             font-weight: normal;
+        }
+
+        .tbl-yesno tr td:nth-child(even) {
+            min-width: 30px;
         }
 
         .tbl-comments tr th {
@@ -285,5 +303,6 @@ foreach ( $questions as $question ) {
         .tbl-rating tr td:first-child {
             text-align: left;
         }
+
     </style>
 </div>

@@ -91,6 +91,7 @@ class Submenu {
 
 			$ratings    = $db->get_items_report_rating( $course_id, $document_name );
 			$checkboxes = $db->get_items_report_checkbox( $course_id, $document_name );
+			$comments   = $db->get_items_report_comments( $course_id, $document_name );
 
 			include_once DCMS_WPFORMS_PATH . '/views/report-detail.php';
 		}

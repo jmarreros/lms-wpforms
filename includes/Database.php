@@ -268,7 +268,8 @@ class Database {
 					i.course_id = $course_id AND
 					f.field_group = '$document' AND 
 					f.field_type = 'textarea' AND
-					f.is_active = 1
+					f.is_active = 1 AND
+					d.field_value != ''
 				ORDER BY f.field_order";
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];

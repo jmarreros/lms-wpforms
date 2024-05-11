@@ -184,6 +184,7 @@ class Database {
 		$author_table = $this->wpdb->users;
 
 		$sql = "SELECT DATE_FORMAT(i.updated, '%d/%m/%Y') updated,
+       				i.entry_id_wpforms,
        				u.display_name user_name, 
        				c.post_title course_name,
        				a.display_name author_name
@@ -192,6 +193,8 @@ class Database {
 				INNER JOIN $post_table c ON i.course_id = c.ID
 				INNER JOIN $author_table a ON i.author_id = a.ID
 				WHERE i.course_id = $id_course";
+		
+		error_log(print_r($sql,true));
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}

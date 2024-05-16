@@ -2,6 +2,7 @@
 
 namespace dcms\lms_forms\includes;
 
+use MasterStudy\Lms\Repositories\CurriculumRepository;
 use wpdb;
 
 class Database {
@@ -72,22 +73,25 @@ class Database {
 	}
 
 
+	// For current user get course data by lesson
 	public function get_course_data_by_lesson( $lesson_id ): array {
-		$lessons_table = $this->wpdb->prefix . 'stm_lms_user_lessons';
-		$post_table    = $this->wpdb->posts;
-		$user_table    = $this->wpdb->users;
+		$table_courses_user = $this->wpdb->prefix . 'stm_lms_user_courses';
+		$curriculum = new CurriculumRepository;
 
-		$sql = "SELECT 
-				l.course_id course_id, 
-				p.post_title course_name,
-				p.post_author author_id,
-				u.display_name author_name
-				FROM $lessons_table l
-				INNER JOIN $post_table p ON l.course_id = p.ID 
-				INNER JOIN $user_table u ON p.post_author = u.ID
-				WHERE l.lesson_id = $lesson_id";
+		// Get all courses id by lesson
+		$courses_lesson = $curriculum->get_lesson_course_ids( $lesson_id )??[];
 
-		return $this->wpdb->get_row( $sql, ARRAY_A );
+		// Get user courses
+		$user_id = get_current_user_id();
+		$sql = "SELECT course_id FROM $table_courses_user WHERE user_id = $user_id";
+		$courses_user = $this->wpdb->get_col( $sql )??[];
+
+		$common_courses = array_intersect( $courses_lesson, $courses_user );
+		rsort($common_courses);
+
+		$course_id = $common_courses[0]??0;
+
+		return $this->get_course_data( $course_id ) ?? [];
 	}
 
 	public function get_course_data( $course_id ): array {
@@ -193,8 +197,6 @@ class Database {
 				INNER JOIN $post_table c ON i.course_id = c.ID
 				INNER JOIN $author_table a ON i.author_id = a.ID
 				WHERE i.course_id = $id_course";
-		
-		error_log(print_r($sql,true));
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
@@ -253,7 +255,7 @@ class Database {
 					f.is_active = 1
 				GROUP BY f.field_label, f.field_options, d.field_value, f.field_order
 				ORDER BY f.field_order";
-		
+
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 

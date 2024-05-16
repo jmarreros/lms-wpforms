@@ -194,5 +194,4 @@ class Form {
 		$db->save_items_fields( $item, $item_details );
 	}
 
-
 }

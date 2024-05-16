@@ -2,7 +2,6 @@
 
 namespace dcms\lms_forms\includes;
 
-use MasterStudy\Lms\Repositories\CurriculumRepository;
 use wpdb;
 
 class Database {
@@ -76,10 +75,15 @@ class Database {
 	// For current user get course data by lesson
 	public function get_course_data_by_lesson( $lesson_id ): array {
 		$table_courses_user = $this->wpdb->prefix . 'stm_lms_user_courses';
-		$curriculum = new CurriculumRepository;
+		$table_curriculum_materiales = $this->wpdb->prefix . 'stm_lms_curriculum_materials';
+		$table_curriculum_sections = $this->wpdb->prefix . 'stm_lms_curriculum_sections';
 
 		// Get all courses id by lesson
-		$courses_lesson = $curriculum->get_lesson_course_ids( $lesson_id )??[];
+		$sql = "SELECT course_id FROM $table_curriculum_materiales cm
+				INNER JOIN $table_curriculum_sections cs ON cs.id = cm.section_id
+				WHERE cm.post_id = $lesson_id";
+
+		$courses_lesson = $this->wpdb->get_col( $sql )??[];
 
 		// Get user courses
 		$user_id = get_current_user_id();

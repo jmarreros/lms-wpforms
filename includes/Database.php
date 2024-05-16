@@ -77,13 +77,22 @@ class Database {
 		$table_courses_user = $this->wpdb->prefix . 'stm_lms_user_courses';
 		$table_curriculum_materiales = $this->wpdb->prefix . 'stm_lms_curriculum_materials';
 		$table_curriculum_sections = $this->wpdb->prefix . 'stm_lms_curriculum_sections';
+		$table_curriculum_bind = $this->wpdb->prefix . 'stm_lms_curriculum_bind';
 
 		// Get all courses id by lesson
-		$sql = "SELECT course_id FROM $table_curriculum_materiales cm
+
+		// First try bind table (older versions)
+		$sql = "SELECT course_id FROM $table_curriculum_bind WHERE item_id = $lesson_id";
+		$courses_lesson = $this->wpdb->get_col( $sql )??[];
+
+		// If not found, try materials table
+		if ( empty( $courses_lesson ) ) {
+			$sql = "SELECT course_id FROM $table_curriculum_materiales cm
 				INNER JOIN $table_curriculum_sections cs ON cs.id = cm.section_id
 				WHERE cm.post_id = $lesson_id";
 
-		$courses_lesson = $this->wpdb->get_col( $sql )??[];
+			$courses_lesson = $this->wpdb->get_col( $sql )??[];
+		}
 
 		// Get user courses
 		$user_id = get_current_user_id();

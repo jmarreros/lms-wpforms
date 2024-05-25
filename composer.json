@@ -16,5 +16,7 @@
       "email": "admin@decodecms.com"
     }
   ],
-  "require": {}
+  "require": {
+    "dompdf/dompdf": "^3.0"
+  }
 }

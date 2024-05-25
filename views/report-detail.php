@@ -94,7 +94,7 @@ foreach ( $questions as $question ) {
     <table class="document">
         <tr>
             <td>
-                <img src="<?= DCMS_WPFORMS_URL . '/assets/logo.png' ?>" alt="logo-caes" width="200">
+                <img src="<?= DCMS_WPFORMS_URL . '/assets/img/logo.png' ?>" alt="logo-caes" width="200">
             </td>
             <td>
                 <h3>

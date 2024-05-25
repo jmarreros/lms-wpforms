@@ -64,6 +64,10 @@
     width: 160px;
 }
 
+#table-summary-report .documents .view-pdf{
+    text-decoration:none;
+}
+
 #container-report h2{
     margin:30px auto 20px;
 }

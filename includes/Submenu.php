@@ -2,6 +2,7 @@
 
 namespace dcms\lms_forms\includes;
 
+use Dompdf\Dompdf;
 use dcms\lms_forms\helpers\FieldGroup;
 
 /**
@@ -57,6 +58,7 @@ class Submenu {
 
 		$course_id = intval( $_GET['course'] ?? 0 );
 		$view      = $_GET['view'] ?? 'report';
+		$type_pdf  = $_GET['pdf'] ?? '';
 
 		$db = new Database();
 
@@ -92,6 +94,27 @@ class Submenu {
 			$ratings    = $db->get_items_report_rating( $course_id, $document_name );
 			$checkboxes = $db->get_items_report_checkbox( $course_id, $document_name );
 			$comments   = $db->get_items_report_comments( $course_id, $document_name );
+
+			if ( $type_pdf == '1' ) {
+				ob_start();
+
+				include DCMS_WPFORMS_PATH . '/views/report-detail.php';
+
+				$html = ob_get_clean();
+
+				$dompdf = new Dompdf();
+
+				$options = $dompdf->getOptions();
+				$options->set( 'isRemoteEnabled', true );
+
+				$dompdf->setOptions($options);
+				$dompdf->loadHtml( $html );
+				$dompdf->render();
+
+				ob_end_clean();
+				$dompdf->stream();
+				exit();
+			}
 
 			include_once DCMS_WPFORMS_PATH . '/views/report-detail.php';
 		}

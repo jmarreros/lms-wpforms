@@ -160,7 +160,12 @@
 
     $('.documents a').click(function (e) {
         e.preventDefault();
-        const url = $(this).attr('href') + '&course=' + $('#list-courses').val();
+        let url = $(this).attr('href') + '&course=' + $('#list-courses').val();
+
+        if ( $(this).hasClass('view-pdf') ){
+            url += '&pdf=1';
+        }
+
         window.open(url, '_blank');
     });
 

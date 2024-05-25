@@ -7,22 +7,32 @@
             <tbody>
             <tr>
                 <th scope="row">
+                    <label for="date-range">Fechas entrenamientos:</label>
+                </th>
+                <td>
+                    <label for="date-from">Desde:</label>
+                    <input type="date" name="date-from" id="date-from">
+                    <label for="date-to">Hasta:</label>
+                    <input type="date" name="date-to" id="date-to">
+                </td>
+                <td>
+                    <input class="button button-primary" type="button" id="search-courses" value="Buscar">
+                    <div class="dates-loading loading hide"></div>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
                     <label for="list-courses">Entrenamiento:</label>
                 </th>
                 <td>
                     <select name="list-courses" id="list-courses">
                         <option value="0">-- Seleccione un curso --</option>
-						<?php foreach ( $courses as $course ) : ?>
-                            <option value="<?php echo $course['course_id'] ?>">
-								<?php echo $course['course_name'] ?> - <?php echo $course['created'] ?>
-                            </option>
-						<?php endforeach; ?>
                     </select>
                 </td>
                 <td>
-                    <input class="button button-primary" type="button" id="search-entries" value="Buscar registros">
+                    <input class="button button-primary" type="button" id="search-entries" value="Ver detalle">
                     <span class="msg-btn"></span>
-                    <div class="loading hide"></div>
+                    <div class="course-loading loading hide"></div>
                 </td>
             </tr>
             </tbody>

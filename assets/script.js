@@ -48,6 +48,47 @@
     });
 
 
+    $('#search-courses').click(function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: lms_forms.ajaxurl,
+            type: 'post',
+            dataType: 'json',
+            data: {
+                action: 'dcms_lms_search_courses',
+                dateFrom: $('#date-from').val(),
+                dateTo: $('#date-to').val(),
+                nonce: lms_forms.nonce_lms_forms,
+            }, beforeSend: function () {
+                $('#container-report input').prop('disabled', true);
+                $('#container-report select').prop('disabled', true);
+                $('#container-report .dates-loading').removeClass('hide');
+            }
+        })
+            .done(function (res) {
+                // clear list-courses
+                $('#list-courses').html('<option value="0">Seleccione un curso</option>');
+
+                if ( res.data.length === 0 ) {
+                    alert('No hay cursos en el rango de fechas seleccionado');
+                    return;
+                }
+
+                // fill list-courses
+                res.data.forEach(function (item) {
+                    $('#list-courses').append('<option value="' + item.course_id + '">' + item.course_name + '</option>');
+                });
+            })
+            .always(function () {
+                $('#container-report input').prop('disabled', false);
+                $('#container-report select').prop('disabled', false);
+                $('#container-report .dates-loading').addClass('hide');
+            });
+
+    });
+
+
     // For filtering, reporting screen
     $('#search-entries').click(function (e) {
         e.preventDefault();
@@ -78,7 +119,7 @@
             }, beforeSend: function () {
                 $('#container-report input').prop('disabled', true);
                 $('#container-report select').prop('disabled', true);
-                $('#container-report .loading').removeClass('hide');
+                $('#container-report .course-loading').removeClass('hide');
             }
         })
             .done(function (res) {
@@ -111,7 +152,7 @@
             .always(function () {
                 $('#container-report input').prop('disabled', false);
                 $('#container-report select').prop('disabled', false);
-                $('#container-report .loading').addClass('hide');
+                $('#container-report .course-loading').addClass('hide');
             });
 
     });

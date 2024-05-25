@@ -119,6 +119,7 @@ class Form {
 		// Fill wpforms fields
 		foreach ( $fields_wpforms as $key => $field_wpforms ) {
 			if ( array_key_exists( $key, $fields ) ) {
+				$fields[ $key ]['field_label'] = $field_wpforms['field_label'];
 				continue;
 			}
 

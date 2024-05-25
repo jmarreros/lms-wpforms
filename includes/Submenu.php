@@ -62,9 +62,9 @@ class Submenu {
 
 		// Main report view
 		if ( $view === 'report' ) {
-			$courses = $db->get_courses();
 
 			include_once DCMS_WPFORMS_PATH . '/views/report.php';
+
 		} // Detail report view
 		elseif ( $view === 'detail' ) {
 

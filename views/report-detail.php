@@ -304,5 +304,15 @@ foreach ( $questions as $question ) {
             text-align: left;
         }
 
+        table h3{
+            font-family:Helvetica, sans-serif;
+            font-size: 16px;
+        }
+
+        table tr td,
+        table tr th{
+            font-family:Helvetica, sans-serif;
+            font-size:13px;
+        }
     </style>
 </div>

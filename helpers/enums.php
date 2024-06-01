@@ -40,6 +40,14 @@ abstract class FieldGroup
 		];
 	}
 
+	public static function get_titles():array{
+		return [
+			self::FO_AC_04 => 'EVALUACIÓN ACCIÓN FORMATIVA',
+			self::FO_AC_05 => 'EVALUACIÓN FORMADOR',
+			self::FO_AC_06 => 'EVALUACIÓN ATENCIÓN AL PARTICIPANTE'
+		];
+	}
+
 	public static function get_dates():array{
 		return [
 			self::FO_AC_04 => '26-01-2024',

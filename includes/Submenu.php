@@ -75,6 +75,7 @@ class Submenu {
 			$documents     = FieldGroup::get_groups();
 			$versions      = FieldGroup::get_versions();
 			$dates         = FieldGroup::get_dates();
+			$titles        = FieldGroup::get_titles();
 			$end_date      = '';
 
 
@@ -107,7 +108,7 @@ class Submenu {
 				$options = $dompdf->getOptions();
 				$options->set( 'isRemoteEnabled', true );
 
-				$dompdf->setOptions($options);
+				$dompdf->setOptions( $options );
 				$dompdf->loadHtml( $html );
 				$dompdf->render();
 

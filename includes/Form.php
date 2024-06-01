@@ -15,12 +15,21 @@ class Form {
 		add_filter( 'wpforms_field_properties_hidden', [ $this, 'fill_hidden_fields' ], 10, 3 );
 		add_action( 'wpforms_frontend_output_before', [ $this, 'form_was_filled' ], 10, 2 );
 
-		add_action( 'wpforms_process_complete', [ $this, 'save_form_data' ], 10, 4 );
+		add_action( 'wpforms_process_complete', [ $this, 'save_front_end_form_data' ], 10, 4 );
+		add_action( 'wpforms_pro_admin_entries_edit_process', [ $this, 'edit_admin_form_data_from_entries' ], 10, 3 );
 	}
+
+
 
 	// Fill hidden fields wpforms with custom values, only necessary fill course_id and course_name
 	// Other fields are filled by WPForm configuration hidden field
 	public function fill_hidden_fields( $properties, $field, $form_data ): array {
+
+		// Validate only for front-end
+		if ( is_admin() ) {
+			return $properties;
+		}
+
 		if ( absint( $form_data['id'] ) === $this->form_id ) {
 
 			$value = $properties['inputs']['primary']['attr']['value'];
@@ -137,9 +146,9 @@ class Form {
 
 
 	// Save form data
-	public function save_form_data( $fields, $entry, $form_data, $entry_id ): void {
+	public function save_front_end_form_data( $fields, $entry, $form_data, $entry_id ): void {
 
-		if ( absint( $form_data['id'] ) !== $this->form_id ) {
+		if ( absint( $form_data['id'] ) !== $this->form_id || is_admin() ) {
 			return;
 		}
 
@@ -195,4 +204,24 @@ class Form {
 		$db->save_items_fields( $item, $item_details );
 	}
 
+	// Edit data entries from admin interface
+	public function edit_admin_form_data_from_entries($fields, $entry, $form_data):void{
+//		error_log(print_r('Aquí wpforms_pro_admin_entries_edit_process',true));
+//		error_log(print_r(is_admin(),true));
+//		error_log(print_r($entry,true));
+	}
 }
+
+//[id] => 115886
+//    [entry_id] => 14607
+//    [fields] => Array
+//(
+//	[2] => 4
+//            [19] => 4
+//            [13] => Array
+//(
+//	[0] => Si
+//)
+//
+//[27] => llt
+//        )

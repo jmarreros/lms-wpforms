@@ -2,6 +2,7 @@
 /** @var String[] $header_detail */
 /** @var String $document_name */
 /** @var String[] $versions */
+/** @var String[] $titles */
 /** @var String[] $dates */
 /** @var Array $ratings */
 
@@ -98,7 +99,7 @@ foreach ( $questions as $question ) {
             </td>
             <td>
                 <h3>
-                    EVALUACIÓN ACCIÓN FORMATIVA (ONLINE)
+                    <?= $titles[ $document_name ] ?>
                 </h3>
             </td>
             <td>

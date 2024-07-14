@@ -243,23 +243,17 @@ class Form {
 
 	// Delete data entries from admin interface
 	public function delete_admin_form_data_entry( $entry_id ): void {
-		error_log( print_r( "Delete Entry", true ) );
-		error_log( print_r( $entry_id, true ) );
+		// Get item id
+		$db   = new Database();
+		$item = $db->get_item_fields( $entry_id );
+
+		if ( ! $item ) {
+			return;
+		}
+
+		// Delete id_entry
+		$db = new Database();
+		$db->delete_item_fields( $item['id'] );
 	}
 }
 
-
-
-//[id] => 115886
-//    [entry_id] => 14607
-//    [fields] => Array
-//(
-//	[2] => 4
-//            [19] => 4
-//            [13] => Array
-//(
-//	[0] => Si
-//)
-//
-//[27] => llt
-//        )

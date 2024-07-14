@@ -16,10 +16,11 @@ class Form {
 		add_action( 'wpforms_frontend_output_before', [ $this, 'form_was_filled' ], 10, 2 );
 
 		add_action( 'wpforms_process_complete', [ $this, 'save_front_end_form_data' ], 10, 4 );
+
+		// Edit and delete entries update statistics
 		add_action( 'wpforms_pro_admin_entries_edit_process', [ $this, 'edit_admin_form_data_from_entries' ], 10, 3 );
+		add_action( 'wpforms_post_delete_entries', [ $this, 'delete_admin_form_data_entry' ], 10, 1 );
 	}
-
-
 
 	// Fill hidden fields wpforms with custom values, only necessary fill course_id and course_name
 	// Other fields are filled by WPForm configuration hidden field
@@ -147,20 +148,28 @@ class Form {
 
 	// Save form data
 	public function save_front_end_form_data( $fields, $entry, $form_data, $entry_id ): void {
-
-		if ( absint( $form_data['id'] ) !== $this->form_id || is_admin() ) {
+		if ( absint( $form_data['id'] ) !== $this->form_id ) {
 			return;
 		}
 
 		$db = new Database();
 
-		// Get only value from first element of the filter array
-		$course_id   = array_values( filter_from_fields( 'course_id', $fields ) )[0]['value'] ?? 0;
+		// For edition from admin interface, user_id and course_id are already in $entry array
+		$course_id = $entry['course_id'] ?? 0;
+		$user_id   = $entry['user_id'] ?? 0;
+
+		// From front-end form
+		if ( ! intval( $course_id ) ) {
+			// Get only value from first element of the filter array
+			$course_id = array_values( filter_from_fields( 'course_id', $fields ) )[0]['value'] ?? 0;
+			$user_id   = get_current_user_id();
+		}
+
 		$course_data = $db->get_course_data( $course_id );
 
 		// Item data
 		$item = [
-			'user_id'          => get_current_user_id(),
+			'user_id'          => $user_id,
 			'course_id'        => $course_id,
 			'author_id'        => $course_data['author_id'],
 			'entry_id_wpforms' => $entry_id,
@@ -205,12 +214,41 @@ class Form {
 	}
 
 	// Edit data entries from admin interface
-	public function edit_admin_form_data_from_entries($fields, $entry, $form_data):void{
-//		error_log(print_r('Aquí wpforms_pro_admin_entries_edit_process',true));
-//		error_log(print_r(is_admin(),true));
-//		error_log(print_r($entry,true));
+	public function edit_admin_form_data_from_entries( $fields, $entry, $form_data ): void {
+
+		if ( absint( $form_data['id'] ) !== $this->form_id ) {
+			return;
+		}
+
+		// Get user_id and course_id from database items_field table
+		$db   = new Database();
+		$item = $db->get_item_fields( $entry['entry_id'] ?? 0 );
+
+		if ( ! $item ) {
+			return;
+		}
+
+		// Add data to $entry array
+		$entry['user_id']   = $item['user_id'] ?? 0;
+		$entry['course_id'] = $item['course_id'] ?? 0;
+		$item_id            = $item['id'] ?? 0;
+
+		// Delete id_entry
+		$db = new Database();
+		$db->delete_item_fields( $item_id );
+
+		// Save data
+		$this->save_front_end_form_data( $fields, $entry, $form_data, $entry['entry_id'] );
+	}
+
+	// Delete data entries from admin interface
+	public function delete_admin_form_data_entry( $entry_id ): void {
+		error_log( print_r( "Delete Entry", true ) );
+		error_log( print_r( $entry_id, true ) );
 	}
 }
+
+
 
 //[id] => 115886
 //    [entry_id] => 14607

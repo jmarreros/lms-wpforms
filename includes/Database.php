@@ -74,16 +74,16 @@ class Database {
 
 	// For current user get course data by lesson
 	public function get_course_data_by_lesson( $lesson_id ): array {
-		$table_courses_user = $this->wpdb->prefix . 'stm_lms_user_courses';
+		$table_courses_user          = $this->wpdb->prefix . 'stm_lms_user_courses';
 		$table_curriculum_materiales = $this->wpdb->prefix . 'stm_lms_curriculum_materials';
-		$table_curriculum_sections = $this->wpdb->prefix . 'stm_lms_curriculum_sections';
-		$table_curriculum_bind = $this->wpdb->prefix . 'stm_lms_curriculum_bind';
+		$table_curriculum_sections   = $this->wpdb->prefix . 'stm_lms_curriculum_sections';
+		$table_curriculum_bind       = $this->wpdb->prefix . 'stm_lms_curriculum_bind';
 
 		// Get all courses id by lesson
 
 		// First try bind table (older versions)
-		$sql = "SELECT course_id FROM $table_curriculum_bind WHERE item_id = $lesson_id";
-		$courses_lesson = $this->wpdb->get_col( $sql )??[];
+		$sql            = "SELECT course_id FROM $table_curriculum_bind WHERE item_id = $lesson_id";
+		$courses_lesson = $this->wpdb->get_col( $sql ) ?? [];
 
 		// If not found, try materials table
 		if ( empty( $courses_lesson ) ) {
@@ -91,18 +91,18 @@ class Database {
 				INNER JOIN $table_curriculum_sections cs ON cs.id = cm.section_id
 				WHERE cm.post_id = $lesson_id";
 
-			$courses_lesson = $this->wpdb->get_col( $sql )??[];
+			$courses_lesson = $this->wpdb->get_col( $sql ) ?? [];
 		}
 
 		// Get user courses
-		$user_id = get_current_user_id();
-		$sql = "SELECT course_id FROM $table_courses_user WHERE user_id = $user_id";
-		$courses_user = $this->wpdb->get_col( $sql )??[];
+		$user_id      = get_current_user_id();
+		$sql          = "SELECT course_id FROM $table_courses_user WHERE user_id = $user_id";
+		$courses_user = $this->wpdb->get_col( $sql ) ?? [];
 
 		$common_courses = array_intersect( $courses_lesson, $courses_user );
-		rsort($common_courses);
+		rsort( $common_courses );
 
-		$course_id = $common_courses[0]??0;
+		$course_id = $common_courses[0] ?? 0;
 
 		return $this->get_course_data( $course_id ) ?? [];
 	}
@@ -165,7 +165,7 @@ class Database {
 				'field_options'    => $field['options'],
 				'field_order'      => $field['order'],
 			];
-			
+
 			$this->wpdb->replace( $this->table_fields, $data );
 		}
 	}
@@ -182,8 +182,21 @@ class Database {
 
 	}
 
+	// Delete item fields and item details
+	public function delete_item_fields( $id_item ): void {
+		$this->wpdb->delete( $this->table_item_detail, [ 'id_item' => $id_item ] );
+		$this->wpdb->delete( $this->table_items, [ 'id' => $id_item ] );
+	}
+
+	// Get item fields by entry id
+	public function get_item_fields( $id_entry ): array {
+		$sql = "SELECT * FROM $this->table_items WHERE entry_id_wpforms = $id_entry";
+
+		return $this->wpdb->get_row( $sql, ARRAY_A ) ?? [];
+	}
+
 	// Get active courses
-	public function get_courses($dateFrom, $dateTo): array {
+	public function get_courses( $dateFrom, $dateTo ): array {
 		$post_table = $this->wpdb->posts;
 
 

@@ -27,9 +27,9 @@ class Database {
                     course_id bigint(20) NOT NULL,
                     author_id bigint(20) NOT NULL,
                     entry_id_wpforms bigint(20) NOT NULL,
-                    total_foac04 smallint NOT NULL,
-                    total_foac05 smallint NOT NULL,
-                    total_foac06 smallint NOT NULL,
+                    total_foac04 float NOT NULL,
+                    total_foac05 float NOT NULL,
+                    total_foac06 float NOT NULL,
                     updated datetime default CURRENT_TIMESTAMP,
                     PRIMARY KEY (id)
                 ) {$this->wpdb->get_charset_collate()};";

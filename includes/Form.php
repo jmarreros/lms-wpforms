@@ -4,6 +4,7 @@ namespace dcms\lms_forms\includes;
 
 use dcms\lms_forms\helpers\FieldGroup;
 use dcms\lms_forms\helpers\FieldType;
+use dcms\lms_forms\helpers\Rating;
 
 class Form {
 
@@ -194,17 +195,18 @@ class Form {
 				'field_value' => $fields[ $id ] ['value'] ?? '',
 			];
 
+
 			// sum rating fields totals items for each group
 			if ( $field_db['field_type'] === FieldType::Rating ) {
 				switch ( $field_db['field_group'] ) {
 					case FieldGroup::FO_AC_04:
-						$item['total_foac04'] += intval( $fields[ $id ] ['value'] );
+						$item['total_foac04'] += Rating::RATING_VALUES[ intval( $fields[ $id ] ['value'] ) ] ?? 0;
 						break;
 					case FieldGroup::FO_AC_05:
-						$item['total_foac05'] += intval( $fields[ $id ] ['value'] );
+						$item['total_foac05'] += Rating::RATING_VALUES[ intval( $fields[ $id ] ['value'] ) ] ?? 0;
 						break;
 					case FieldGroup::FO_AC_06:
-						$item['total_foac06'] += intval( $fields[ $id ] ['value'] );
+						$item['total_foac06'] += Rating::RATING_VALUES[ intval( $fields[ $id ] ['value'] ) ] ?? 0;
 						break;
 				}
 			}

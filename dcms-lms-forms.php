@@ -22,6 +22,7 @@ use dcms\lms_forms\includes\Form;
 use dcms\lms_forms\includes\Configuration;
 use dcms\lms_forms\includes\Enqueue;
 use dcms\lms_forms\includes\Report;
+use dcms\lms_forms\includes\Regularization;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -72,6 +73,7 @@ final class Loader {
 		new Form();
 		new Configuration();
 		new Report();
+		new Regularization();
 	}
 }
 

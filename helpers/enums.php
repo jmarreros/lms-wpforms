@@ -1,14 +1,13 @@
 <?php
 
 namespace dcms\lms_forms\helpers;
-abstract class FieldType
-{
+abstract class FieldType {
 	const Rating = 'rating';
 	const Checkbox = 'checkbox';
 	const Textarea = 'textarea';
 }
 
-abstract class Rating{
+abstract class Rating {
 	const RATING_VALUES = [
 		1 => 0,
 		2 => 0.2,
@@ -18,13 +17,20 @@ abstract class Rating{
 	];
 }
 
-abstract class FieldGroup
-{
+abstract class FieldGroup {
 	const FO_AC_04 = 'FO-AC-04';
 	const FO_AC_05 = 'FO-AC-05';
 	const FO_AC_06 = 'FO-AC-06';
 
-	public  static function get_groups(): array {
+	public static function get_groups_db_names() {
+		return [
+			self::FO_AC_04 => 'total_foac04',
+			self::FO_AC_05 => 'total_foac05',
+			self::FO_AC_06 => 'total_foac06'
+		];
+	}
+
+	public static function get_groups(): array {
 		return [
 			self::FO_AC_04,
 			self::FO_AC_05,
@@ -32,7 +38,7 @@ abstract class FieldGroup
 		];
 	}
 
-	public static function get_versions():array{
+	public static function get_versions(): array {
 		return [
 			self::FO_AC_04 => '3.0',
 			self::FO_AC_05 => '2.0',
@@ -40,7 +46,7 @@ abstract class FieldGroup
 		];
 	}
 
-	public static function get_titles():array{
+	public static function get_titles(): array {
 		return [
 			self::FO_AC_04 => 'EVALUACIÓN ACCIÓN FORMATIVA',
 			self::FO_AC_05 => 'EVALUACIÓN FORMADOR',
@@ -48,7 +54,7 @@ abstract class FieldGroup
 		];
 	}
 
-	public static function get_dates():array{
+	public static function get_dates(): array {
 		return [
 			self::FO_AC_04 => '26-01-2024',
 			self::FO_AC_05 => '17-01-2024',

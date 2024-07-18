@@ -320,4 +320,38 @@ class Database {
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 
+
+	// For Regularization
+
+	// Get all items
+	public function get_all_items(): array {
+		$sql = "SELECT * FROM $this->table_items";
+
+		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
+	}
+
+	// Update item document value
+	public function update_item_document_value( $item_id, $document, $value ) {
+		$sql = "UPDATE $this->table_items SET $document = $value WHERE id = $item_id";
+		return $this->wpdb->query( $sql );
+	}
+
+	// Get ratings by item and document
+	public function get_item_ratings( $item_id, $document ): array {
+		$sql = "SELECT 
+					f.field_label,
+					field_value
+				FROM $this->table_fields  f
+				INNER JOIN $this->table_item_detail d ON f.field_id_wpforms = d.field_id
+				INNER JOIN $this->table_items i ON i.id = d.id_item
+				WHERE 
+					i.id = $item_id AND
+					f.field_group = '$document' AND 
+					f.field_type = 'rating' AND
+					f.is_active = 1
+				ORDER BY f.field_order";
+
+		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
+	}
+
 }

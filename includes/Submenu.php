@@ -35,6 +35,17 @@ class Submenu {
 			[ $this, 'report_page_callback' ],
 			0
 		);
+
+		add_submenu_page(
+			'wpforms-overview',
+			esc_html__( 'Reporte Ponderado Evaluaciones', 'wpforms-lite' ),
+			esc_html__( 'Reporte Ponderado Evaluaciones', 'wpforms-lite' ),
+			'manage_options',
+			'dcms-lms-forms-report-weighted',
+			[ $this, 'report_page_callback_weighted' ],
+			1
+		);
+
 	}
 
 	// Callback, show main view
@@ -119,5 +130,9 @@ class Submenu {
 
 			include_once DCMS_WPFORMS_PATH . '/views/report-detail.php';
 		}
+	}
+
+	public function report_page_callback_weighted(): void {
+		include_once DCMS_WPFORMS_PATH . '/views/report-weighted.php';
 	}
 }

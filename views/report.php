@@ -1,5 +1,5 @@
 <div class="wrap">
-    <h2><?php _e( 'Reporte', 'dcms-lms-forms' ) ?></h2>
+    <h2><?php _e( 'Reporte Evaluaciones', 'dcms-lms-forms' ) ?></h2>
     <hr>
     <div id="container-report">
 

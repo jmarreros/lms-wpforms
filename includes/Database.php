@@ -199,7 +199,6 @@ class Database {
 	public function get_courses( $dateFrom, $dateTo ): array {
 		$post_table = $this->wpdb->posts;
 
-
 		$sql = "SELECT DISTINCT i.course_id, c.post_title course_name, DATE(c.post_date) created 
 				FROM $this->table_items i
 				INNER JOIN $post_table c ON i.course_id = c.ID";
@@ -220,6 +219,31 @@ class Database {
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 
+
+	public function get_courses_weighted( $dateFrom, $dateTo ): array {
+		$post_table = $this->wpdb->posts;
+
+		$sql = "SELECT i.course_id, c.post_title course_name, DATE(c.post_date) created 
+				FROM $this->table_items i
+				INNER JOIN $post_table c ON i.course_id = c.ID";
+
+		if ( $dateFrom || $dateTo ) {
+			$sql .= " WHERE ";
+			if ( $dateFrom ) {
+				$sql .= "DATE(c.post_date) >= '$dateFrom' ";
+			}
+			if ( $dateTo ) {
+				$sql .= $dateFrom ? "AND " : "";
+				$sql .= "DATE(c.post_date) <= '$dateTo' ";
+			}
+		}
+
+		$sql .= "ORDER BY course_name, created DESC";
+
+		error_log(print_r($sql,true));
+
+		return [];
+	}
 
 	// Get items details by item id
 	public function get_entries_report( $id_course ): array {
@@ -333,6 +357,7 @@ class Database {
 	// Update item document value
 	public function update_item_document_value( $item_id, $document, $value ) {
 		$sql = "UPDATE $this->table_items SET $document = $value WHERE id = $item_id";
+
 		return $this->wpdb->query( $sql );
 	}
 

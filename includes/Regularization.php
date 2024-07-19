@@ -16,6 +16,10 @@ class Regularization {
 			return;
 		}
 
+		$this->regularize_totals();
+	}
+	
+	private function regularize_totals(): void {
 		// Get all items to regularize
 		$db    = new Database();
 		$items = $db->get_all_items();

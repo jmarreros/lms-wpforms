@@ -175,8 +175,11 @@ class Form {
 			'author_id'        => $course_data['author_id'],
 			'entry_id_wpforms' => $entry_id,
 			'total_foac04'     => 0,
+			'ideal_foac04'     => 0,
 			'total_foac05'     => 0,
+			'ideal_foac05'     => 0,
 			'total_foac06'     => 0,
+			'ideal_foac06'     => 0,
 		];
 
 		$fields_db = $db->get_fields();
@@ -211,6 +214,13 @@ class Form {
 				}
 			}
 		}
+
+		// For ideal values
+		$ideal_total          = Rating::RATING_VALUES[ count( Rating::RATING_VALUES ) ];
+		$ideals               = $db->get_ideal_count();
+		$item['ideal_foac04'] = ( $ideals['FO-AC-04'] ?? 0 ) * $ideal_total;
+		$item['ideal_foac05'] = ( $ideals['FO-AC-05'] ?? 0 ) * $ideal_total;
+		$item['ideal_foac06'] = ( $ideals['FO-AC-06'] ?? 0 ) * $ideal_total;
 
 		$db->save_items_fields( $item, $item_details );
 	}

@@ -29,9 +29,11 @@
 		<table id="table-entries-report" class="table-report">
 			<thead>
 			<tr>
-				<th>Alumno</th>
-				<th>Culminación</th>
-				<th>Detalles</th>
+				<th>Profesor</th>
+				<th>Módulo</th>
+				<th>Acción Formativa</th>
+                <th>Formador</th>
+                <th>Atención Participante</th>
 			</tr>
 			</thead>
 			<tbody>

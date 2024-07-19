@@ -27,9 +27,12 @@ class Database {
                     course_id bigint(20) NOT NULL,
                     author_id bigint(20) NOT NULL,
                     entry_id_wpforms bigint(20) NOT NULL,
-                    total_foac04 float NOT NULL,
-                    total_foac05 float NOT NULL,
-                    total_foac06 float NOT NULL,
+                    total_foac04 decimal(4,2) NOT NULL,
+                    ideal_foac04 decimal(4,2) DEFAULT NULL,
+                    total_foac05 decimal(4,2) NOT NULL,
+                    ideal_foac05 decimal(4,2) DEFAULT NULL,
+                    total_foac06 decimal(4,2) NOT NULL,
+  					ideal_foac06 decimal(4,2) DEFAULT NULL,
                     updated datetime default CURRENT_TIMESTAMP,
                     PRIMARY KEY (id)
                 ) {$this->wpdb->get_charset_collate()};";
@@ -344,6 +347,22 @@ class Database {
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 
+	// Get ideal count for each document, for reporting fields
+	public function get_ideal_count() : array{
+		$sql = "SELECT field_group, COUNT(field_group) qty
+				FROM $this->table_fields 
+				WHERE field_type = 'rating' AND is_active = 1 
+				GROUP BY field_group";
+
+		$return = [];
+		$fields = $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
+
+		foreach ( $fields as $field ) {
+			$return[$field['field_group']] = $field['qty'];
+		}
+
+		return $return;
+	}
 
 	// For Regularization
 
@@ -378,5 +397,6 @@ class Database {
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
+
 
 }

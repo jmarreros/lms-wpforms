@@ -369,7 +369,7 @@ class Database {
 			}
 		}
 
-		$sql .= "GROUP BY author_name, course_name
+		$sql .= " GROUP BY author_name, course_name
 				ORDER BY author_name, course_name";
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];

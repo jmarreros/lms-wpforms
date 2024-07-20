@@ -70,7 +70,7 @@
                 // clear list-courses
                 $('#list-courses').html('<option value="0">Seleccione un curso</option>');
 
-                if ( res.data.length === 0 ) {
+                if (res.data.length === 0) {
                     alert('No hay cursos en el rango de fechas seleccionado');
                     return;
                 }
@@ -162,50 +162,18 @@
         e.preventDefault();
         let url = $(this).attr('href') + '&course=' + $('#list-courses').val();
 
-        if ( $(this).hasClass('view-pdf') ){
+        if ($(this).hasClass('view-pdf')) {
             url += '&pdf=1';
         }
 
         window.open(url, '_blank');
     });
 
-
-    // Weighted report
-
-    $('#search-courses-weighted').click(function (e) {
-        e.preventDefault();
-
-        $.ajax({
-            url: lms_forms.ajaxurl,
-            type: 'post',
-            dataType: 'json',
-            data: {
-                action: 'dcms_lms_search_courses_weighted',
-                dateFrom: $('#date-from').val(),
-                dateTo: $('#date-to').val(),
-                nonce: lms_forms.nonce_lms_forms,
-            }, beforeSend: function () {
-                $('#container-report input').prop('disabled', true);
-                $('#container-report .dates-loading').removeClass('hide');
-            }
-        })
-            .done(function (res) {
-                // clear list-courses
-
-                console.log(res);
-
-                // if ( res.data.length === 0 ) {
-                //     alert('No hay cursos en el rango de fechas seleccionado');
-                //     return;
-                // }
-
-            })
-            .always(function () {
-                $('#container-report input').prop('disabled', false);
-                $('#container-report .dates-loading').addClass('hide');
-            });
-
-    });
-
+    $('#form-weighted-report').submit(function(e){
+        if ( $('#date-from').val() === '' && $('#date-to').val() === '' ) {
+            e.preventDefault();
+            alert('Seleccione un rango de fechas');
+        }
+    })
 
 })(jQuery);

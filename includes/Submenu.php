@@ -136,6 +136,14 @@ class Submenu {
 		wp_enqueue_script( 'lms-forms-script' );
 		wp_enqueue_style( 'lms-forms-style' );
 
+		$dates = [
+			'from' => $_GET['dateFrom'] ?? '',
+			'to'   => $_GET['dateTo'] ?? ''
+		];
+
+		$db = new Database();
+		$entries = $db->get_weighted_report( $dates['from'], $dates['to'] );
+
 		include_once DCMS_WPFORMS_PATH . '/views/report-weighted.php';
 	}
 }

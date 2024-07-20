@@ -2,13 +2,15 @@
 
 namespace dcms\lms_forms\includes;
 
+use JetBrains\PhpStorm\NoReturn;
+
 class Report {
 
 	public function __construct() {
 		add_action( 'wp_ajax_dcms_lms_search_courses', [ $this, 'lms_search_courses' ] );
 		add_action( 'wp_ajax_dcms_lms_search_entries', [ $this, 'lms_search_entries' ] );
 
-		add_action( 'wp_ajax_dcms_lms_search_courses_weighted', [ $this, 'lms_search_courses_weighted' ] );
+		add_action( 'admin_post_process_weighted_report', [ $this, 'lms_redirect_report_weighted' ] );
 	}
 
 
@@ -42,18 +44,17 @@ class Report {
 		);
 	}
 
-	public function lms_search_courses_weighted(): void {
-		dcms_nonce_verification();
-
+	// To add dates to url and redirect
+	public function lms_redirect_report_weighted(): void {
 		$dates = $this->get_dates_from_post();
 
-		$db      = new Database();
-		$courses = $db->get_weighted_report( $dates['from'], $dates['to'] );
-
-		wp_send_json_success( $courses );
+		//Add date to origen url and redirect
+		$url_origen = $_SERVER['HTTP_REFERER'] . '&dateFrom=' . $dates['from'] . '&dateTo=' . $dates['to'];
+		wp_redirect( $url_origen );
+		exit;
 	}
 
-
+	// Auxiliar function to get dates from POST request
 	private function get_dates_from_post(): array {
 		$date_from = $_POST['dateFrom'] ?? null;
 		$date_to   = $_POST['dateTo'] ?? null;

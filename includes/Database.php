@@ -222,32 +222,6 @@ class Database {
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 
-
-	public function get_courses_weighted( $dateFrom, $dateTo ): array {
-		$post_table = $this->wpdb->posts;
-
-		$sql = "SELECT i.course_id, c.post_title course_name, DATE(c.post_date) created 
-				FROM $this->table_items i
-				INNER JOIN $post_table c ON i.course_id = c.ID";
-
-		if ( $dateFrom || $dateTo ) {
-			$sql .= " WHERE ";
-			if ( $dateFrom ) {
-				$sql .= "DATE(c.post_date) >= '$dateFrom' ";
-			}
-			if ( $dateTo ) {
-				$sql .= $dateFrom ? "AND " : "";
-				$sql .= "DATE(c.post_date) <= '$dateTo' ";
-			}
-		}
-
-		$sql .= "ORDER BY course_name, created DESC";
-
-		error_log(print_r($sql,true));
-
-		return [];
-	}
-
 	// Get items details by item id
 	public function get_entries_report( $id_course ): array {
 		$post_table   = $this->wpdb->posts;
@@ -348,7 +322,7 @@ class Database {
 	}
 
 	// Get ideal count for each document, for reporting fields
-	public function get_ideal_count() : array{
+	public function get_ideal_count(): array {
 		$sql = "SELECT field_group, COUNT(field_group) qty
 				FROM $this->table_fields 
 				WHERE field_type = 'rating' AND is_active = 1 
@@ -358,11 +332,49 @@ class Database {
 		$fields = $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 
 		foreach ( $fields as $field ) {
-			$return[$field['field_group']] = $field['qty'];
+			$return[ $field['field_group'] ] = $field['qty'];
 		}
 
 		return $return;
 	}
+
+
+	// Get weighted report - reporte ponderado
+	public function get_weighted_report( $dateFrom, $dateTo ): array {
+		$post_table = $this->wpdb->posts;
+		$user_table = $this->wpdb->users;
+
+		$sql = "SELECT 
+					a.display_name author_name,
+					c.post_title course_name,
+					SUM(i.total_foac04) foac04,
+					SUM(i.ideal_foac04) ideal_foac04,
+					SUM(i.total_foac05) foac05,
+					SUM(i.ideal_foac05) ideal_foac05,
+					SUM(i.total_foac06) foac06,
+					SUM(i.ideal_foac06) ideal_foac06,
+					COUNT(i.course_id) qty
+				FROM $this->table_items  i
+				INNER JOIN $post_table c ON i.course_id = c.ID
+				INNER JOIN $user_table a ON a.ID = i.author_id";
+
+		if ( $dateFrom || $dateTo ) {
+			$sql .= " WHERE ";
+			if ( $dateFrom ) {
+				$sql .= "DATE(c.post_date) >= '$dateFrom' ";
+			}
+			if ( $dateTo ) {
+				$sql .= $dateFrom ? "AND " : "";
+				$sql .= "DATE(c.post_date) <= '$dateTo' ";
+			}
+		}
+
+		$sql .= "GROUP BY author_name, course_name
+				ORDER BY author_name, course_name";
+
+		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
+	}
+
 
 	// For Regularization
 

@@ -133,6 +133,9 @@ class Submenu {
 	}
 
 	public function report_page_callback_weighted(): void {
+		wp_enqueue_script( 'lms-forms-script' );
+		wp_enqueue_style( 'lms-forms-style' );
+
 		include_once DCMS_WPFORMS_PATH . '/views/report-weighted.php';
 	}
 }

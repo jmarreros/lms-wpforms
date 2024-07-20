@@ -48,7 +48,7 @@ class Report {
 		$dates = $this->get_dates_from_post();
 
 		$db      = new Database();
-		$courses = $db->get_courses_weighted( $dates['from'], $dates['to'] );
+		$courses = $db->get_weighted_report( $dates['from'], $dates['to'] );
 
 		wp_send_json_success( $courses );
 	}

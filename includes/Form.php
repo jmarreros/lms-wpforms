@@ -175,11 +175,8 @@ class Form {
 			'author_id'        => $course_data['author_id'],
 			'entry_id_wpforms' => $entry_id,
 			'total_foac04'     => 0,
-			'ideal_foac04'     => 0,
 			'total_foac05'     => 0,
-			'ideal_foac05'     => 0,
 			'total_foac06'     => 0,
-			'ideal_foac06'     => 0,
 		];
 
 		$fields_db = $db->get_fields();

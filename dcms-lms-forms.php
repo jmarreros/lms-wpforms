@@ -3,7 +3,7 @@
 Plugin Name: LMS - Forms
 Plugin URI: https://decodecms.com
 Description: Integrates WPForms with LMS for evaluations
-Version: 1.2
+Version: 1.2.5
 Author: Jhon Marreros Guzmán
 Author URI: https://decodecms.com
 Text Domain: dcms-lms-forms
@@ -35,7 +35,7 @@ final class Loader {
 
 	// Define all the constants we need
 	public function define_constants(): void {
-		define( 'DCMS_WPFORMS_VERSION', '1.2' );
+		define( 'DCMS_WPFORMS_VERSION', '1.2.5' );
 		define( 'DCMS_WPFORMS_PATH', plugin_dir_path( __FILE__ ) );
 		define( 'DCMS_WPFORMS_URL', plugin_dir_url( __FILE__ ) );
 		define( 'DCMS_WPFORMS_BASE_NAME', plugin_basename( __FILE__ ) );

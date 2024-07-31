@@ -141,8 +141,13 @@ class Submenu {
 			'to'   => $_GET['dateTo'] ?? ''
 		];
 
-		$db = new Database();
-		$entries = $db->get_weighted_report( $dates['from'], $dates['to'] );
+		$db      = new Database();
+		$entries = [];
+
+		// Validate dates
+		if ( $dates['from'] || $dates['to'] ) {
+			$entries = $db->get_weighted_report( $dates['from'], $dates['to'] );
+		}
 
 		include_once DCMS_WPFORMS_PATH . '/views/report-weighted.php';
 	}

@@ -341,12 +341,14 @@ class Database {
 
 	// Get weighted report - reporte ponderado
 	public function get_weighted_report( $dateFrom, $dateTo ): array {
-		$post_table = $this->wpdb->posts;
-		$user_table = $this->wpdb->users;
+		$post_table     = $this->wpdb->posts;
+		$postmeta_table = $this->wpdb->postmeta;
+		$user_table     = $this->wpdb->users;
 
 		$sql = "SELECT 
 					a.display_name author_name,
 					c.post_title course_name,
+					cm.meta_value AS end_date,
 					SUM(i.total_foac04) foac04,
 					SUM(i.ideal_foac04) ideal_foac04,
 					SUM(i.total_foac05) foac05,
@@ -356,20 +358,21 @@ class Database {
 					COUNT(i.course_id) qty
 				FROM $this->table_items  i
 				INNER JOIN $post_table c ON i.course_id = c.ID
-				INNER JOIN $user_table a ON a.ID = i.author_id";
+				INNER JOIN $user_table a ON a.ID = i.author_id
+				LEFT JOIN $postmeta_table cm ON c.ID = cm.post_id AND meta_key = '" . DCMS_COURSE_END_DATE . "'";
 
 		if ( $dateFrom || $dateTo ) {
 			$sql .= " WHERE ";
 			if ( $dateFrom ) {
-				$sql .= "DATE(c.post_date) >= '$dateFrom' ";
+				$sql .= "DATE(cm.meta_value) >= '$dateFrom' ";
 			}
 			if ( $dateTo ) {
 				$sql .= $dateFrom ? "AND " : "";
-				$sql .= "DATE(c.post_date) <= '$dateTo' ";
+				$sql .= "DATE(cm.meta_value) <= '$dateTo' ";
 			}
 		}
 
-		$sql .= " GROUP BY author_name, course_name
+		$sql .= " GROUP BY author_name, course_name, end_date
 				ORDER BY author_name, course_name";
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];

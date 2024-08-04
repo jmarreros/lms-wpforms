@@ -34,7 +34,7 @@
                 <tbody>
                 <tr>
                     <th scope="row">
-                        <label for="date-range">Fechas entrenamientos:</label>
+                        <label for="date-range">Fechas fin entrenamientos:</label>
                     </th>
                     <td>
                         <label for="date-from">Desde:</label>

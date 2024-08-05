@@ -118,7 +118,8 @@ class Database {
 				p.ID course_id,
 				p.post_title course_name,
 				p.post_author author_id,
-				u.display_name author_name
+				u.display_name author_name,
+				u.user_email author_email
 				FROM $post_table p 
 				INNER JOIN $user_table u ON p.post_author = u.ID
 				WHERE p.ID = $course_id";

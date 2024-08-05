@@ -5,6 +5,7 @@ namespace dcms\lms_forms\includes;
 use dcms\lms_forms\helpers\FieldGroup;
 use dcms\lms_forms\helpers\FieldType;
 use dcms\lms_forms\helpers\Rating;
+use WPForms_WP_Emails;
 
 class Form {
 
@@ -17,6 +18,7 @@ class Form {
 		add_action( 'wpforms_frontend_output_before', [ $this, 'form_was_filled' ], 10, 2 );
 
 		add_action( 'wpforms_process_complete', [ $this, 'save_front_end_form_data' ], 10, 4 );
+		add_action( 'wpforms_process_complete', [ $this, 'send_mail_course_author_form_data' ], 11, 4 );
 
 		// Edit and delete entries update statistics
 		add_action( 'wpforms_pro_admin_entries_edit_process', [ $this, 'edit_admin_form_data_from_entries' ], 10, 3 );
@@ -221,6 +223,42 @@ class Form {
 
 		$db->save_items_fields( $item, $item_details );
 	}
+
+
+	// Send email course author when a new entry is created
+	public function send_mail_course_author_form_data( $fields, $entry, $form_data, $entry_id ): void {
+		if ( absint( $form_data['id'] ) !== $this->form_id ) {
+			return;
+		}
+
+		// Get Course ID
+		$course_id = $entry['course_id'] ?? 0;
+		if ( ! intval( $course_id ) ) {
+			$course_id = array_values( filter_from_fields( 'course_id', $fields ) )[0]['value'] ?? 0;
+		}
+
+		// Get author data
+		$db           = new Database();
+		$course_data  = $db->get_course_data( $course_id );
+		$author_email = $course_data['author_email'] ?? '';
+
+		// Create new email.
+		$emails = new WPForms_WP_Emails();
+		$emails->__set( 'form_data', $form_data );
+		$emails->__set( 'fields', $fields );
+		$emails->__set( 'entry_id', $entry_id );
+
+		$subject = "Nueva entrada: Evaluación Capacitación";
+		$message = $emails->wpforms_html_field_value( true );
+
+		$headers = [
+			'Content-Type: text/html; charset=UTF-8',
+			'From: ' . get_bloginfo( 'name' ) . ' <' . get_option( 'admin_email' ) . '>'
+		];
+
+		wp_mail( $author_email, $subject, $message, $headers );
+	}
+
 
 	// Edit data entries from admin interface
 	public function edit_admin_form_data_from_entries( $fields, $entry, $form_data ): void {

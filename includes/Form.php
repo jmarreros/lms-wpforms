@@ -242,7 +242,7 @@ class Form {
 		$course_data  = $db->get_course_data( $course_id );
 		$author_email = $course_data['author_email'] ?? '';
 
-		// Create new email.
+		// Create new email object to get message
 		$emails = new WPForms_WP_Emails();
 		$emails->__set( 'form_data', $form_data );
 		$emails->__set( 'fields', $fields );

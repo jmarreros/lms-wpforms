@@ -1,6 +1,6 @@
 {
-  "name": "jmarreros/dcms-lemans-migration",
-  "description": "Migrate data from Joomla to WooCommerce",
+  "name": "jmarreros/dcms-lms-forms",
+  "description": "Forms for LMS Master Study",
   "autoload": {
     "psr-4": {
       "dcms\\lms_forms\\": "./"

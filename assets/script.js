@@ -59,6 +59,7 @@
                 action: 'dcms_lms_search_courses',
                 dateFrom: $('#date-from').val(),
                 dateTo: $('#date-to').val(),
+                form_id: $('#form-id').val(),
                 nonce: lms_forms.nonce_lms_forms,
             }, beforeSend: function () {
                 $('#container-report input').prop('disabled', true);
@@ -115,6 +116,7 @@
             data: {
                 action: 'dcms_lms_search_entries',
                 course: course,
+                form_id: $('#form-id').val(),
                 nonce: lms_forms.nonce_lms_forms,
             }, beforeSend: function () {
                 $('#container-report input').prop('disabled', true);
@@ -128,14 +130,22 @@
                     let r = Array();
                     let j = -1;
 
+                    if (res.data.length === 0) {
+                        return;
+                    }
+
                     $('#course_name').text(res.data[0].course_name ?? '');
                     $('#course_author').text(res.data[0].author_name ?? '');
 
                     for (let i = 0; i < res.data.length; i++) {
 
-                        const entry_url = lms_forms.entries_url + res.data[i].entry_id_wpforms;
+                        const entry_url = lms_forms.entries_url + '?page=wpforms-entries&view=details&form_id=' +
+                            encodeURIComponent(res.data[i].form_id_wpforms) + '&entry_id=' +
+                            encodeURIComponent(res.data[i].entry_id_wpforms);
                         r[++j] = "<tr><td>";
                         r[++j] = res.data[i].user_name;
+                        r[++j] = "</td><td>";
+                        r[++j] = lms_forms.report_forms[res.data[i].form_id_wpforms] || res.data[i].form_id_wpforms;
                         r[++j] = "</td><td>";
                         r[++j] = res.data[i].updated;
                         r[++j] = "</td><td>";
@@ -160,7 +170,7 @@
 
     $('.documents a').click(function (e) {
         e.preventDefault();
-        let url = $(this).attr('href') + '&course=' + $('#list-courses').val();
+        let url = $(this).attr('href') + '&course=' + $('#list-courses').val() + '&form_id=' + $('#form-id').val();
 
         if ($(this).hasClass('view-pdf')) {
             url += '&pdf=1';

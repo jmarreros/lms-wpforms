@@ -26,7 +26,8 @@ class Database {
                     user_id bigint(20) NOT NULL,
                     course_id bigint(20) NOT NULL,
                     author_id bigint(20) NOT NULL,
-                    entry_id_wpforms bigint(20) NOT NULL,
+					entry_id_wpforms bigint(20) NOT NULL,
+					form_id_wpforms bigint(20) NOT NULL DEFAULT 0,
                     total_foac04 decimal(4,2) NOT NULL,
                     ideal_foac04 decimal(4,2) DEFAULT NULL,
                     total_foac05 decimal(4,2) NOT NULL,
@@ -34,11 +35,47 @@ class Database {
                     total_foac06 decimal(4,2) NOT NULL,
   					ideal_foac06 decimal(4,2) DEFAULT NULL,
                     updated datetime default CURRENT_TIMESTAMP,
-                    PRIMARY KEY (id)
+					PRIMARY KEY (id),
+					KEY user_course_form (user_id, course_id, form_id_wpforms),
+					KEY form_entry (form_id_wpforms, entry_id_wpforms)
                 ) {$this->wpdb->get_charset_collate()};";
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $sql );
+	}
+
+	public function maybe_upgrade_schema(): void {
+		$database_version = '1.3.0';
+
+		if ( get_option( DCMS_WPFORMS_DB_VERSION ) === $database_version ) {
+			return;
+		}
+
+		$column = $this->wpdb->get_var( "SHOW COLUMNS FROM {$this->table_items} LIKE 'form_id_wpforms'" );
+		if ( ! $column ) {
+			$this->wpdb->query( "ALTER TABLE {$this->table_items} ADD form_id_wpforms bigint(20) NOT NULL DEFAULT 0 AFTER entry_id_wpforms" );
+		}
+
+		$legacy_form_id = absint( get_option( DCMS_WPFORMS_FORM_ID, 0 ) );
+		if ( $legacy_form_id ) {
+			$this->wpdb->query(
+				$this->wpdb->prepare(
+					"UPDATE {$this->table_items} SET form_id_wpforms = %d WHERE form_id_wpforms = 0",
+					$legacy_form_id
+				)
+			);
+		}
+
+		$indexes = $this->wpdb->get_results( "SHOW INDEX FROM {$this->table_items}", ARRAY_A );
+		$index_names = wp_list_pluck( $indexes, 'Key_name' );
+		if ( ! in_array( 'user_course_form', $index_names, true ) ) {
+			$this->wpdb->query( "ALTER TABLE {$this->table_items} ADD KEY user_course_form (user_id, course_id, form_id_wpforms)" );
+		}
+		if ( ! in_array( 'form_entry', $index_names, true ) ) {
+			$this->wpdb->query( "ALTER TABLE {$this->table_items} ADD KEY form_entry (form_id_wpforms, entry_id_wpforms)" );
+		}
+
+		update_option( DCMS_WPFORMS_DB_VERSION, $database_version );
 	}
 
 	// Create table item details
@@ -129,9 +166,13 @@ class Database {
 
 
 	// Get item data by user and course
-	public function get_item_data( $user_id, $course_id ): array {
-		$sql = "SELECT * FROM $this->table_items 
-         		WHERE user_id = $user_id AND course_id = $course_id";
+	public function get_item_data( $user_id, $course_id, $form_id ): array {
+		$sql = $this->wpdb->prepare(
+			"SELECT * FROM $this->table_items WHERE user_id = %d AND course_id = %d AND form_id_wpforms = %d",
+			absint( $user_id ),
+			absint( $course_id ),
+			absint( $form_id )
+		);
 
 		return $this->wpdb->get_row( $sql, ARRAY_A ) ?? [];
 	}
@@ -146,10 +187,12 @@ class Database {
 	}
 
 	// Get fields saved in configuration from database
-	public function get_fields(): array {
-		$sql = "SELECT * FROM $this->table_fields 
-         		WHERE is_active = 1 AND field_group<>'' 
-         		ORDER BY field_group, field_order";
+	public function get_fields( $group = '' ): array {
+		$sql = "SELECT * FROM $this->table_fields WHERE is_active = 1 AND field_group<>''";
+		if ( $group ) {
+			$sql .= $this->wpdb->prepare( ' AND field_group = %s', $group );
+		}
+		$sql .= ' ORDER BY field_group, field_order';
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
@@ -193,44 +236,51 @@ class Database {
 	}
 
 	// Get item fields by entry id
-	public function get_item_fields( $id_entry ): array {
-		$sql = "SELECT * FROM $this->table_items WHERE entry_id_wpforms = $id_entry";
+	public function get_item_fields( $id_entry, $form_id = 0 ): array {
+		$sql = "SELECT * FROM $this->table_items WHERE entry_id_wpforms = " . absint( $id_entry );
+		if ( $form_id ) {
+			$sql .= $this->wpdb->prepare( ' AND form_id_wpforms = %d', $form_id );
+		}
 
 		return $this->wpdb->get_row( $sql, ARRAY_A ) ?? [];
 	}
 
 	// Get active courses
-	public function get_courses( $dateFrom, $dateTo ): array {
+	public function get_courses( $dateFrom, $dateTo, $form_id = 0 ): array {
 		$post_table = $this->wpdb->posts;
 
 		$sql = "SELECT DISTINCT i.course_id, c.post_title course_name, DATE(c.post_date) created 
 				FROM $this->table_items i
 				INNER JOIN $post_table c ON i.course_id = c.ID";
 
-		if ( $dateFrom || $dateTo ) {
-			$sql .= " WHERE ";
-			if ( $dateFrom ) {
-				$sql .= "DATE(c.post_date) >= '$dateFrom' ";
-			}
-			if ( $dateTo ) {
-				$sql .= $dateFrom ? "AND " : "";
-				$sql .= "DATE(c.post_date) <= '$dateTo' ";
-			}
+		$conditions = [];
+		if ( $form_id ) {
+			$conditions[] = $this->wpdb->prepare( 'i.form_id_wpforms = %d', absint( $form_id ) );
+		}
+		if ( $dateFrom ) {
+			$conditions[] = "DATE(c.post_date) >= '$dateFrom'";
+		}
+		if ( $dateTo ) {
+			$conditions[] = "DATE(c.post_date) <= '$dateTo'";
+		}
+		if ( $conditions ) {
+			$sql .= ' WHERE ' . implode( ' AND ', $conditions );
 		}
 
-		$sql .= "ORDER BY course_name, created DESC";
+		$sql .= ' ORDER BY course_name, created DESC';
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 
 	// Get items details by item id
-	public function get_entries_report( $id_course ): array {
+	public function get_entries_report( $id_course, $form_id = 0 ): array {
 		$post_table   = $this->wpdb->posts;
 		$user_table   = $this->wpdb->users;
 		$author_table = $this->wpdb->users;
 
 		$sql = "SELECT DATE_FORMAT(i.updated, '%d/%m/%Y') updated,
-       				i.entry_id_wpforms,
+						i.entry_id_wpforms,
+						i.form_id_wpforms,
        				u.display_name user_name, 
        				c.post_title course_name,
        				a.display_name author_name
@@ -238,13 +288,16 @@ class Database {
 				INNER JOIN $user_table u ON i.user_id = u.ID
 				INNER JOIN $post_table c ON i.course_id = c.ID
 				INNER JOIN $author_table a ON i.author_id = a.ID
-				WHERE i.course_id = $id_course";
+				WHERE i.course_id = " . absint( $id_course );
+		if ( $form_id ) {
+			$sql .= $this->wpdb->prepare( ' AND i.form_id_wpforms = %d', absint( $form_id ) );
+		}
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 
 	// Get header detail for report
-	public function get_item_report_detail( $course_id ): array {
+	public function get_item_report_detail( $course_id, $form_id = 0 ): array {
 		$post_table = $this->wpdb->posts;
 		$user_table = $this->wpdb->users;
 
@@ -255,13 +308,16 @@ class Database {
 				FROM $this->table_items i
 				INNER JOIN $user_table a ON a.ID = i.author_id 
 				INNER JOIN $post_table p ON p.ID = i.course_id
-				WHERE course_id = $course_id";
+				WHERE course_id = " . absint( $course_id );
+		if ( $form_id ) {
+			$sql .= $this->wpdb->prepare( ' AND i.form_id_wpforms = %d', absint( $form_id ) );
+		}
 
 		return $this->wpdb->get_row( $sql, ARRAY_A ) ?? [];
 	}
 
 	// Get items rating type fields for reporting
-	public function get_items_report_rating( $course_id, $document ): array {
+	public function get_items_report_rating( $course_id, $document, $form_id = 0 ): array {
 		$sql = "SELECT 
 					f.field_label,
 					field_value
@@ -273,14 +329,18 @@ class Database {
 					f.field_group = '$document' AND 
 					f.field_type = 'rating' AND
 					f.is_active = 1
-				ORDER BY f.field_order";
+				";
+		if ( $form_id ) {
+			$sql .= $this->wpdb->prepare( ' AND i.form_id_wpforms = %d', absint( $form_id ) );
+		}
+		$sql .= ' ORDER BY f.field_order';
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 
 
 	// Get items checkbox type fields with grouped values for reporting
-	public function get_items_report_checkbox( $course_id, $document ): array {
+	public function get_items_report_checkbox( $course_id, $document, $form_id = 0 ): array {
 		$sql = "SELECT 
 					f.field_label,
 					f.field_options,
@@ -295,15 +355,18 @@ class Database {
 					f.field_group = '$document' AND 
 					f.field_type = 'checkbox' AND
 					f.is_active = 1
-				GROUP BY f.field_label, f.field_options, d.field_value, f.field_order
-				ORDER BY f.field_order";
+				";
+		if ( $form_id ) {
+			$sql .= $this->wpdb->prepare( ' AND i.form_id_wpforms = %d', absint( $form_id ) );
+		}
+		$sql .= ' GROUP BY f.field_label, f.field_options, d.field_value, f.field_order ORDER BY f.field_order';
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 
 
 	// Get items comments type fields values for reporting
-	public function get_items_report_comments( $course_id, $document ): array {
+	public function get_items_report_comments( $course_id, $document, $form_id = 0 ): array {
 		$sql = "SELECT 
 					f.field_label,
 					f.field_order,
@@ -317,17 +380,24 @@ class Database {
 					f.field_type = 'textarea' AND
 					f.is_active = 1 AND
 					d.field_value != ''
-				ORDER BY f.field_order";
+				";
+		if ( $form_id ) {
+			$sql .= $this->wpdb->prepare( ' AND i.form_id_wpforms = %d', absint( $form_id ) );
+		}
+		$sql .= ' ORDER BY f.field_order';
 
 		return $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
 	}
 
 	// Get ideal count for each document, for reporting fields
-	public function get_ideal_count(): array {
+	public function get_ideal_count( $group = '' ): array {
 		$sql = "SELECT field_group, COUNT(field_group) qty
 				FROM $this->table_fields 
-				WHERE field_type = 'rating' AND is_active = 1 
-				GROUP BY field_group";
+				WHERE field_type = 'rating' AND is_active = 1";
+		if ( $group ) {
+			$sql .= $this->wpdb->prepare( ' AND field_group = %s', $group );
+		}
+		$sql .= ' GROUP BY field_group';
 
 		$return = [];
 		$fields = $this->wpdb->get_results( $sql, ARRAY_A ) ?? [];
@@ -341,7 +411,7 @@ class Database {
 
 
 	// Get weighted report - reporte ponderado
-	public function get_weighted_report( $dateFrom, $dateTo ): array {
+	public function get_weighted_report( $dateFrom, $dateTo, $form_id = 0 ): array {
 		$post_table     = $this->wpdb->posts;
 		$postmeta_table = $this->wpdb->postmeta;
 		$user_table     = $this->wpdb->users;
@@ -362,15 +432,18 @@ class Database {
 				INNER JOIN $user_table a ON a.ID = i.author_id
 				LEFT JOIN $postmeta_table cm ON c.ID = cm.post_id AND meta_key = '" . DCMS_COURSE_END_DATE . "'";
 
-		if ( $dateFrom || $dateTo ) {
-			$sql .= " WHERE ";
-			if ( $dateFrom ) {
-				$sql .= "DATE(cm.meta_value) >= '$dateFrom' ";
-			}
-			if ( $dateTo ) {
-				$sql .= $dateFrom ? "AND " : "";
-				$sql .= "DATE(cm.meta_value) <= '$dateTo' ";
-			}
+		$conditions = [];
+		if ( $form_id ) {
+			$conditions[] = $this->wpdb->prepare( 'i.form_id_wpforms = %d', absint( $form_id ) );
+		}
+		if ( $dateFrom ) {
+			$conditions[] = "DATE(cm.meta_value) >= '$dateFrom'";
+		}
+		if ( $dateTo ) {
+			$conditions[] = "DATE(cm.meta_value) <= '$dateTo'";
+		}
+		if ( $conditions ) {
+			$sql .= ' WHERE ' . implode( ' AND ', $conditions );
 		}
 
 		$sql .= " GROUP BY author_name, course_name, end_date

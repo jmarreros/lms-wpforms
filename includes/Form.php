@@ -10,9 +10,11 @@ use WPForms_WP_Emails;
 class Form {
 
 	private int $form_id;
+	private int $sub_form_id;
 
 	public function __construct() {
 		$this->form_id = get_option( DCMS_WPFORMS_FORM_ID, 0 );
+		$this->sub_form_id = get_option( DCMS_WPFORMS_SUB_FORM_ID, 0 );
 
 		add_filter( 'wpforms_field_properties_hidden', [ $this, 'fill_hidden_fields' ], 10, 3 );
 		add_action( 'wpforms_frontend_output_before', [ $this, 'form_was_filled' ], 10, 2 );
@@ -34,7 +36,7 @@ class Form {
 			return $properties;
 		}
 
-		if ( absint( $form_data['id'] ) === $this->form_id ) {
+		if ( $this->get_form_type( absint( $form_data['id'] ?? 0 ) ) ) {
 
 			$value = $properties['inputs']['primary']['attr']['value'];
 
@@ -59,7 +61,8 @@ class Form {
 	// Add custom styles to show or hide form and next button at the top of the form
 	public function form_was_filled( $form_data, $form ): void {
 
-		if ( absint( $form_data['id'] ) !== $this->form_id ) {
+		$form_id = absint( $form_data['id'] ?? 0 );
+		if ( ! $this->get_form_type( $form_id ) ) {
 			return;
 		}
 
@@ -67,13 +70,13 @@ class Form {
 		$lesson_data = $db->get_course_data_by_lesson( get_the_ID() );
 		$course_id   = $lesson_data['course_id'];
 
-		$item_data = $db->get_item_data( get_current_user_id(), $course_id );
+		$item_data = $db->get_item_data( get_current_user_id(), $course_id, $form_id );
 
 		if ( empty( $item_data ) ) { // User does not have item data, does not fill the form
 			echo "<style>.masterstudy-course-player-navigation__next{display:none!important;}</style>";
 		} else {
 			echo "<h3>Ya has completado la encuesta</h3>";
-			echo "<style>.wpforms-container{display:none;}</style>";
+			echo "<style>#wpforms-{$form_id}{display:none;}</style>";
 		}
 
 	}
@@ -104,6 +107,88 @@ class Form {
 					'field_options' => rtrim( $field_options, '|' )
 				];
 			}
+		}
+
+		return $fields;
+	}
+
+	private function get_form_type( $form_id ): string {
+		if ( $form_id === $this->form_id ) {
+			return 'main';
+		}
+
+		if ( $this->sub_form_id && $form_id === $this->sub_form_id ) {
+			return 'foac05';
+		}
+
+		return '';
+	}
+
+	private function get_field_signature( $field ): string {
+		return strtolower( trim( $field['field_type'] ?? '' ) ) . '|' .
+			strtolower( trim( $field['field_label'] ?? '' ) ) . '|' .
+			strtolower( trim( $field['field_options'] ?? '' ) );
+	}
+
+	public function is_valid_foac05_sub_form( $form_id ): bool {
+		return count( $this->get_foac05_sub_form_fields( $form_id ) ) > 0 && $this->has_course_hidden_fields( $form_id );
+	}
+
+	private function has_course_hidden_fields( $form_id ): bool {
+		$db      = new Database();
+		$content = $db->get_wpforms_content( $form_id );
+		$data    = json_decode( $content );
+		$labels  = [];
+
+		foreach ( $data->fields ?? [] as $field ) {
+			if ( ( $field->type ?? '' ) === 'hidden' ) {
+				$labels[] = $field->label ?? '';
+			}
+		}
+
+		return in_array( 'course_id', $labels, true ) && in_array( 'course_name', $labels, true );
+	}
+
+	private function get_foac05_sub_form_fields( $form_id ): array {
+		$db               = new Database();
+		$canonical_fields = $db->get_fields( FieldGroup::FO_AC_05 );
+		$sub_form_fields  = $this->get_wpforms_fields( $form_id );
+
+		if ( count( $canonical_fields ) !== count( $sub_form_fields ) ) {
+			return [];
+		}
+
+		$canonical_by_signature = [];
+		foreach ( $canonical_fields as $field ) {
+			$signature = $this->get_field_signature( $field );
+			if ( isset( $canonical_by_signature[ $signature ] ) ) {
+				return [];
+			}
+			$canonical_by_signature[ $signature ] = $field;
+		}
+
+		$mapped_fields = [];
+		foreach ( $sub_form_fields as $sub_field_id => $sub_field ) {
+			$signature = $this->get_field_signature( $sub_field );
+			if ( ! isset( $canonical_by_signature[ $signature ] ) ) {
+				return [];
+			}
+			$mapped_fields[ $sub_field_id ] = $canonical_by_signature[ $signature ];
+		}
+
+		return count( $mapped_fields ) === count( $canonical_fields ) ? $mapped_fields : [];
+	}
+
+	private function get_form_fields( $form_id ): array {
+		$db = new Database();
+
+		if ( $this->get_form_type( $form_id ) === 'foac05' ) {
+			return $this->get_foac05_sub_form_fields( $form_id );
+		}
+
+		$fields = [];
+		foreach ( $db->get_fields() as $field ) {
+			$fields[ $field['field_id_wpforms'] ] = $field;
 		}
 
 		return $fields;
@@ -151,7 +236,9 @@ class Form {
 
 	// Save form data
 	public function save_front_end_form_data( $fields, $entry, $form_data, $entry_id ): void {
-		if ( absint( $form_data['id'] ) !== $this->form_id ) {
+		$form_id   = absint( $form_data['id'] ?? 0 );
+		$form_type = $this->get_form_type( $form_id );
+		if ( ! $form_type ) {
 			return;
 		}
 
@@ -176,25 +263,26 @@ class Form {
 			'course_id'        => $course_id,
 			'author_id'        => $course_data['author_id'],
 			'entry_id_wpforms' => $entry_id,
+			'form_id_wpforms'  => $form_id,
 			'total_foac04'     => 0,
 			'total_foac05'     => 0,
 			'total_foac06'     => 0,
 		];
 
-		$fields_db = $db->get_fields();
+		$fields_db = $this->get_form_fields( $form_id );
 
 		$item_details = [];
-		foreach ( $fields_db as $field_db ) {
+		foreach ( $fields_db as $source_field_id => $field_db ) {
 
 			$id = $field_db['field_id_wpforms'];
-			if ( ! array_key_exists( $field_db['field_id_wpforms'], $fields ) ) {
+			if ( ! array_key_exists( $source_field_id, $fields ) ) {
 				continue;
 			}
 
 			// Detail item data
 			$item_details[] = [
 				'field_id'    => $id,
-				'field_value' => $fields[ $id ] ['value'] ?? '',
+				'field_value' => $fields[ $source_field_id ] ['value'] ?? '',
 			];
 
 
@@ -202,13 +290,13 @@ class Form {
 			if ( $field_db['field_type'] === FieldType::Rating ) {
 				switch ( $field_db['field_group'] ) {
 					case FieldGroup::FO_AC_04:
-						$item['total_foac04'] += Rating::RATING_VALUES[ intval( $fields[ $id ] ['value'] ) ] ?? 0;
+						$item['total_foac04'] += Rating::RATING_VALUES[ intval( $fields[ $source_field_id ] ['value'] ) ] ?? 0;
 						break;
 					case FieldGroup::FO_AC_05:
-						$item['total_foac05'] += Rating::RATING_VALUES[ intval( $fields[ $id ] ['value'] ) ] ?? 0;
+						$item['total_foac05'] += Rating::RATING_VALUES[ intval( $fields[ $source_field_id ] ['value'] ) ] ?? 0;
 						break;
 					case FieldGroup::FO_AC_06:
-						$item['total_foac06'] += Rating::RATING_VALUES[ intval( $fields[ $id ] ['value'] ) ] ?? 0;
+						$item['total_foac06'] += Rating::RATING_VALUES[ intval( $fields[ $source_field_id ] ['value'] ) ] ?? 0;
 						break;
 				}
 			}
@@ -216,7 +304,7 @@ class Form {
 
 		// For ideal values
 		$ideal_total          = Rating::RATING_VALUES[ count( Rating::RATING_VALUES ) ];
-		$ideals               = $db->get_ideal_count();
+		$ideals               = $db->get_ideal_count( $form_type === 'foac05' ? FieldGroup::FO_AC_05 : '' );
 		$item['ideal_foac04'] = ( $ideals['FO-AC-04'] ?? 0 ) * $ideal_total;
 		$item['ideal_foac05'] = ( $ideals['FO-AC-05'] ?? 0 ) * $ideal_total;
 		$item['ideal_foac06'] = ( $ideals['FO-AC-06'] ?? 0 ) * $ideal_total;
@@ -227,7 +315,7 @@ class Form {
 
 	// Send email course author when a new entry is created
 	public function send_mail_course_author_form_data( $fields, $entry, $form_data, $entry_id ): void {
-		if ( absint( $form_data['id'] ) !== $this->form_id ) {
+		if ( ! $this->get_form_type( absint( $form_data['id'] ?? 0 ) ) ) {
 			return;
 		}
 
@@ -263,13 +351,14 @@ class Form {
 	// Edit data entries from admin interface
 	public function edit_admin_form_data_from_entries( $fields, $entry, $form_data ): void {
 
-		if ( absint( $form_data['id'] ) !== $this->form_id ) {
+		$form_id = absint( $form_data['id'] ?? 0 );
+		if ( ! $this->get_form_type( $form_id ) ) {
 			return;
 		}
 
 		// Get user_id and course_id from database items_field table
 		$db   = new Database();
-		$item = $db->get_item_fields( $entry['entry_id'] ?? 0 );
+		$item = $db->get_item_fields( $entry['entry_id'] ?? 0, $form_id );
 
 		if ( ! $item ) {
 			return;
@@ -303,4 +392,3 @@ class Form {
 		$db->delete_item_fields( $item['id'] );
 	}
 }
-

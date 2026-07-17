@@ -73,7 +73,7 @@ foreach ( $total_by_rating as $key => $value ) {
 }
 
 
-$percent_total = round( ( $total_real / $total_ideal ) * 100, 2 );
+$percent_total = $total_ideal ? round( ( $total_real / $total_ideal ) * 100, 2 ) : 0;
 
 
 // For checkbox

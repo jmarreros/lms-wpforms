@@ -13,8 +13,23 @@ class Configuration {
 
 	#[NoReturn]
 	public function save_id_form(): void {
-		$id_form = (int) $_POST['id_wpform'];
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'No autorizado.' );
+		}
+
+		check_admin_referer( 'dcms_lms_forms_save_ids' );
+
+		$id_form     = absint( $_POST['id_wpform'] ?? 0 );
+		$sub_form_id = absint( $_POST['id_sub_wpform_foac05'] ?? 0 );
+		$form        = new Form();
+
+		if ( $sub_form_id && ! $form->is_valid_foac05_sub_form( $sub_form_id ) ) {
+			wp_safe_redirect( add_query_arg( 'dcms_lms_forms_error', 'invalid-sub-form', admin_url( DCMS_WPFORMS_CONFIGURATION_PAGE ) ) );
+			exit();
+		}
+
 		update_option( DCMS_WPFORMS_FORM_ID, $id_form );
+		update_option( DCMS_WPFORMS_SUB_FORM_ID, $sub_form_id );
 
 		wp_safe_redirect( esc_url( admin_url( DCMS_WPFORMS_CONFIGURATION_PAGE ) ) );
 		exit();

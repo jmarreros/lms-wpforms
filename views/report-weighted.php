@@ -34,6 +34,19 @@
                 <tbody>
                 <tr>
                     <th scope="row">
+						<label for="form-id">Formulario:</label>
+					</th>
+					<td>
+						<select name="form_id" id="form-id">
+							<?php foreach ( $report_forms as $form_id => $form_name ) : ?>
+								<option value="<?= esc_attr( $form_id ) ?>" <?= selected( $selected_form_id, $form_id, false ) ?>><?= esc_html( $form_name ) ?></option>
+							<?php endforeach; ?>
+						</select>
+					</td>
+					<td></td>
+				</tr>
+				<tr>
+					<th scope="row">
                         <label for="date-range">Fechas fin entrenamientos:</label>
                     </th>
                     <td>
@@ -68,29 +81,35 @@
 			$sum04 = 0;
 			$sum05 = 0;
 			$sum06 = 0;
+			$count04 = 0;
+			$count05 = 0;
+			$count06 = 0;
 			?>
 			<?php foreach ( $entries as $entry ) : ?>
 				<?php
-				$foac04 = $entry['foac04'] * 100 / $entry['ideal_foac04'];
-				$foac05 = $entry['foac05'] * 100 / $entry['ideal_foac05'];
-				$foac06 = $entry['foac06'] * 100 / $entry['ideal_foac06'];
-				$sum04  += $foac04;
-				$sum05  += $foac05;
-				$sum06  += $foac06;
+				$foac04 = $entry['ideal_foac04'] > 0 ? $entry['foac04'] * 100 / $entry['ideal_foac04'] : null;
+				$foac05 = $entry['ideal_foac05'] > 0 ? $entry['foac05'] * 100 / $entry['ideal_foac05'] : null;
+				$foac06 = $entry['ideal_foac06'] > 0 ? $entry['foac06'] * 100 / $entry['ideal_foac06'] : null;
+				$sum04  += $foac04 ?? 0;
+				$sum05  += $foac05 ?? 0;
+				$sum06  += $foac06 ?? 0;
+				$count04 += null === $foac04 ? 0 : 1;
+				$count05 += null === $foac05 ? 0 : 1;
+				$count06 += null === $foac06 ? 0 : 1;
 				?>
                 <tr>
                     <td><?= $entry['author_name'] ?></td>
                     <td><?= $entry['course_name'] ?></td>
-                    <td><?= round( $foac04 ) ?></td>
-                    <td><?= round( $foac05 ) ?></td>
-                    <td><?= round( $foac06 ) ?></td>
+                    <td><?= null === $foac04 ? '-' : round( $foac04 ) ?></td>
+                    <td><?= null === $foac05 ? '-' : round( $foac05 ) ?></td>
+                    <td><?= null === $foac06 ? '-' : round( $foac06 ) ?></td>
                 </tr>
 			<?php endforeach; ?>
 			<?php if ( count( $entries ) != 0 ) : ?>
 			<?php
-			$total04 = round( $sum04 / count( $entries ) );
-			$total05 = round( $sum05 / count( $entries ) );
-			$total06 = round( $sum06 / count( $entries ) );
+			$total04 = $count04 ? round( $sum04 / $count04 ) : '-';
+			$total05 = $count05 ? round( $sum05 / $count05 ) : '-';
+			$total06 = $count06 ? round( $sum06 / $count06 ) : '-';
 			?>
             </tbody>
             <tfoot>

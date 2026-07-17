@@ -2,24 +2,37 @@
 <div class="wrap">
     <h2><?php _e( 'WPForms Integration', 'dcms-lms-forms' ) ?></h2>
     <hr>
-    <form method="post" action="<?php echo admin_url( 'admin-post.php' ) ?>">
+    <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ) ?>">
+		<?php wp_nonce_field( 'dcms_lms_forms_save_ids' ); ?>
 
         <table class="form-table">
             <tbody>
             <tr>
                 <th scope="row">
-                    <label for="url_token">ID WPForm</label>
+                    <label for="id_wpform">ID formulario Genérico</label>
                 </th>
                 <td>
-                    <input type="text" name="id_wpform" value="<?= $id_form ?>" required>
+                    <input type="text" name="id_wpform" value="<?= esc_attr( $id_form ) ?>" required>
 
                     <input type="hidden" name="action" value="save_id_form">
                     <input class="button button-primary" type="submit" name="submit" value="Grabar">
                 </td>
             </tr>
+            <tr>
+                <th scope="row">
+                    <label for="id_sub_wpform_foac05">ID formulario Facilitadores</label>
+                </th>
+                <td>
+                    <input type="text" id="id_sub_wpform_foac05" name="id_sub_wpform_foac05" value="<?= esc_attr( $id_sub_form ) ?>">
+                    <p class="description">Debe contener exactamente los campos configurados para FO-AC-05 y los campos ocultos course_id y course_name.</p>
+                </td>
+            </tr>
             </tbody>
         </table>
     </form>
+	<?php if ( ( $_GET['dcms_lms_forms_error'] ?? '' ) === 'invalid-sub-form' ) : ?>
+        <div class="notice notice-error"><p>El subformulario debe contener los mismos campos, tipos y opciones de FO-AC-05, además de los campos ocultos course_id y course_name.</p></div>
+	<?php endif; ?>
     <hr>
 
     <div id="container-fields">

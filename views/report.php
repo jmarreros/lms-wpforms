@@ -6,6 +6,19 @@
         <table class="filter-table form-table">
             <tbody>
             <tr>
+				<th scope="row">
+					<label for="form-id">Formulario:</label>
+				</th>
+				<td>
+					<select name="form_id" id="form-id">
+						<?php foreach ( $report_forms as $form_id => $form_name ) : ?>
+							<option value="<?= esc_attr( $form_id ) ?>" <?= selected( $selected_form_id, $form_id, false ) ?>><?= esc_html( $form_name ) ?></option>
+						<?php endforeach; ?>
+					</select>
+				</td>
+				<td></td>
+			</tr>
+			<tr>
                 <th scope="row">
                     <label for="date-range">Fechas entrenamientos:</label>
                 </th>
@@ -71,12 +84,14 @@
             <thead>
             <tr>
                 <th>Alumno</th>
+                <th>Formulario</th>
                 <th>Culminación</th>
                 <th>Detalles</th>
             </tr>
             </thead>
             <tbody>
             <tr>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>

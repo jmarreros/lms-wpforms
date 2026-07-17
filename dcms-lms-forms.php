@@ -3,7 +3,7 @@
 Plugin Name: LMS - Forms
 Plugin URI: https://decodecms.com
 Description: Integrates WPForms with LMS for evaluations
-Version: 1.2.5
+ Version: 1.3.0
 Author: Jhon Marreros Guzmán
 Author URI: https://decodecms.com
 Text Domain: dcms-lms-forms
@@ -35,13 +35,15 @@ final class Loader {
 
 	// Define all the constants we need
 	public function define_constants(): void {
-		define( 'DCMS_WPFORMS_VERSION', '1.2.5' );
+		define( 'DCMS_WPFORMS_VERSION', '1.3.0' );
 		define( 'DCMS_WPFORMS_PATH', plugin_dir_path( __FILE__ ) );
 		define( 'DCMS_WPFORMS_URL', plugin_dir_url( __FILE__ ) );
 		define( 'DCMS_WPFORMS_BASE_NAME', plugin_basename( __FILE__ ) );
 		define( 'DCMS_WPFORMS_SUBMENU', 'options-general.php' );
 		define( 'DCMS_WPFORMS_CONFIGURATION_PAGE', DCMS_WPFORMS_SUBMENU . '?page=dcms-lms-forms' );
 		define( 'DCMS_WPFORMS_FORM_ID', 'dcms_lms_forms_id_form' );
+		define( 'DCMS_WPFORMS_SUB_FORM_ID', 'dcms_lms_forms_id_sub_form_foac05' );
+		define( 'DCMS_WPFORMS_DB_VERSION', 'dcms_lms_forms_db_version' );
 //		define( 'DCMS_WPFORMS_MINIMUM_DATE_COURSES', '2024-03-01'); // Date to filter courses, to start new functionality
 	}
 

@@ -17,9 +17,10 @@ class Report {
 	public function lms_search_courses(): void {
 		dcms_nonce_verification();
 		$dates = $this->get_dates_from_post();
+		$form_id = absint( $_POST['form_id'] ?? 0 );
 
 		$db      = new Database();
-		$courses = $db->get_courses( $dates['from'], $dates['to'] );
+		$courses = $db->get_courses( $dates['from'], $dates['to'], $form_id );
 
 		wp_send_json_success( $courses );
 	}
@@ -27,14 +28,15 @@ class Report {
 	public function lms_search_entries(): void {
 		dcms_nonce_verification();
 
-		$course = $_POST['course'];
+		$course  = absint( $_POST['course'] ?? 0 );
+		$form_id = absint( $_POST['form_id'] ?? 0 );
 
 		if ( ! $course ) {
 			wp_send_json( [ 'message' => 'Selecciona algún curso' ] );
 		}
 
 		$db     = new Database();
-		$result = $db->get_entries_report( $course );
+		$result = $db->get_entries_report( $course, $form_id );
 
 		wp_send_json(
 			[
@@ -47,10 +49,18 @@ class Report {
 	// To add dates to url and redirect
 	public function lms_redirect_report_weighted(): void {
 		$dates = $this->get_dates_from_post();
+		$form_id = absint( $_POST['form_id'] ?? 0 );
 
-		//Add date to origen url and redirect
-		$url_origen = $_SERVER['HTTP_REFERER'] . '&dateFrom=' . $dates['from'] . '&dateTo=' . $dates['to'];
-		wp_redirect( $url_origen );
+		$url = add_query_arg(
+			[
+				'page'     => 'dcms-lms-forms-report-weighted',
+				'dateFrom' => $dates['from'],
+				'dateTo'   => $dates['to'],
+				'form_id'  => $form_id,
+			],
+			admin_url( 'admin.php' )
+		);
+		wp_safe_redirect( $url );
 		exit;
 	}
 
